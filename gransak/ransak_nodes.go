@@ -1,4 +1,4 @@
-package filter
+package gransak
 
 type OperatorFunction func(re *RansakEmulator)
 
