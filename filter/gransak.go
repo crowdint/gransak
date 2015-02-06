@@ -9,6 +9,7 @@ func NewGransak() *Gransak {
 	return &Gransak{
 		separator:   "_",
 		placeholder: "{{.}}",
+		valueholder: "{{v}}",
 	}
 }
 
@@ -18,6 +19,7 @@ type Gransak struct {
 	template        string
 	separator       string
 	placeholder     string
+	valueholder     string
 	pos             int
 	param           *gransakParam
 }
@@ -115,21 +117,29 @@ func (this *Gransak) evaluated(token string) {
 	this.evaluatedTokens = append(this.evaluatedTokens, token)
 }
 
-func (this *Gransak) replacePlaceholder(replaceFor string) {
+func (this *Gransak) replace(replace, replaceFor string) {
 	this.template = strings.Replace(
 		this.template,
-		this.placeholder,
+		replace,
 		replaceFor,
 		-1,
 	)
 }
 
+func (this *Gransak) replacePlaceholder(replaceFor string) {
+	this.replace(this.placeholder, replaceFor)
+}
+
+func (this *Gransak) replaceValueHolder(replaceFor string) {
+	this.replace(this.valueholder, replaceFor)
+}
+
 func (this *Gransak) replaceValue() {
 	if len(this.param.parts) == 0 {
-		this.replacePlaceholder(this.param.StrRepresentation)
+		this.replaceValueHolder(this.param.StrRepresentation)
 	} else {
 		for _, value := range this.param.parts {
-			this.template = strings.Replace(this.template, this.placeholder, value, 1)
+			this.template = strings.Replace(this.template, this.valueholder, value, 1)
 		}
 	}
 }

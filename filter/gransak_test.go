@@ -5,7 +5,7 @@ import (
 )
 
 func TestGransak(t *testing.T) {
-	ransak := NewRansakEmulator()
+	ransak := NewGransak()
 
 	//cont / or / and
 	expected := "first_name LIKE '%cone%' OR last_name LIKE '%cone%'"
