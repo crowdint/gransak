@@ -30,6 +30,13 @@ type GransakFilter struct {
 	valueholder     string
 	pos             int
 	param           *gransakParam
+	tableName       string
+}
+
+func (this *GransakFilter) Table(tableName string) *GransakFilter {
+	this.tableName = tableName
+
+	return this
 }
 
 func (this *GransakFilter) ToSql(input string, param interface{}) string {
@@ -37,7 +44,7 @@ func (this *GransakFilter) ToSql(input string, param interface{}) string {
 
 	this.tokenize(input)
 
-	this.param = newGransakParam(param, reflect.TypeOf(param).String())
+	this.param = newGransakParam(param, reflect.TypeOf(param).Kind())
 
 	for this.pos = 0; this.pos < len(this.toEvaluate); this.pos++ {
 		token := this.toEvaluate[this.pos]
@@ -60,6 +67,10 @@ func (this *GransakFilter) ToSql(input string, param interface{}) string {
 	}
 
 	this.replaceValue()
+
+	this.appendSelectStatement()
+
+	this.tableName = ""
 
 	return strings.Trim(this.template, " ")
 }
@@ -111,7 +122,9 @@ func (this *GransakFilter) find(nodeParam *Node, pos int) (*Node, bool) {
 
 func (this *GransakFilter) appendField() string {
 	field := this.getLastField()
-	this.template += field + " " + this.placeholder + " "
+	if field != "" {
+		this.template += field + " " + this.placeholder + " "
+	}
 	return field
 }
 
@@ -153,10 +166,16 @@ func (this *GransakFilter) replaceValue() {
 }
 
 func (this *GransakFilter) getCorrectSqlFormat(value string) string {
-	if this.param.kind == "string" {
+	if this.param.kind == reflect.String {
 		return "'" + value + "'"
 	}
 	return value
+}
+
+func (this *GransakFilter) appendSelectStatement() {
+	if strings.Trim(this.tableName, " ") != "" {
+		this.template = "SELECT * FROM " + this.tableName + " WHERE " + this.template
+	}
 }
 
 func isCandidateToOperator(item string) (*Node, bool) {

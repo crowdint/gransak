@@ -210,8 +210,28 @@ func TestGransak(t *testing.T) {
 		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
 	}
 
-	expected = "age IN (28,29,30)"
 	sql = Gransak.ToSql("age_in", "[28,29,30]")
+
+	if sql != expected {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	}
+
+	sql = Gransak.ToSql("age_in", []int{28, 29, 30})
+
+	if sql != expected {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	}
+
+	//not_in
+	expected = "age NOT IN (28,29,30)"
+	sql = Gransak.ToSql("age_not_in", "28..30")
+
+	if sql != expected {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	}
+
+	expected = "age NOT IN (28,29,30)"
+	sql = Gransak.ToSql("age_not_in", "[28,29,30]")
 
 	if sql != expected {
 		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
@@ -228,6 +248,29 @@ func TestGransak(t *testing.T) {
 	//not_cont_any
 	expected = "user_name NOT LIKE '%cone%' AND user_name NOT LIKE '%carlos%'"
 	sql = Gransak.ToSql("user_name_not_cont_any", "%w(cone carlos)")
+
+	if sql != expected {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	}
+
+	//we can even do this
+	expected = "user_name LIKE '%cone%' AND last_name = 'gutierrez'"
+	sql = Gransak.ToSql("user_name_cont_and_last_name_eq", "%w(cone gutierrez)")
+
+	if sql != expected {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	}
+
+	expected = "user_name LIKE '%cone%' AND last_name IS NOT NULL AND last_name <> ''"
+	sql = Gransak.ToSql("user_name_cont_and_last_name_present", "cone")
+
+	if sql != expected {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	}
+
+	//Adding a select statement (only if a table name was specified)
+	expected = "SELECT * FROM conejo WHERE user_name LIKE '%cone%' AND last_name = 'gutierrez'"
+	sql = Gransak.Table("conejo").ToSql("user_name_cont_and_last_name_eq", "%w(cone gutierrez)")
 
 	if sql != expected {
 		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
