@@ -111,7 +111,9 @@ func (this *GransakFilter) find(nodeParam *Node, pos int) (*Node, bool) {
 
 func (this *GransakFilter) appendField() string {
 	field := this.getLastField()
-	this.template += field + " " + this.placeholder + " "
+	if field != "" {
+		this.template += field + " " + this.placeholder + " "
+	}
 	return field
 }
 

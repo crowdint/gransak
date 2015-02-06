@@ -233,6 +233,14 @@ func TestGransak(t *testing.T) {
 		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
 	}
 
+	//we can even do this
+	expected = "user_name LIKE '%cone%' AND last_name = 'gutierrez'"
+	sql = Gransak.ToSql("user_name_cont_and_last_name_eq", "%w(cone gutierrez)")
+
+	if sql != expected {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	}
+
 	//Has word "not" but is not "not_equal" nor "not_in"
 	//so it must be part of the field's name
 	expected = "field_not_operator = 29"
