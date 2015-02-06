@@ -151,16 +151,20 @@ func (this *GransakFilter) replacePlaceholder(replaceFor string) {
 	this.replace(this.placeholder, replaceFor)
 }
 
-func (this *GransakFilter) replaceValueHolder(replaceFor string) {
+func (this *GransakFilter) replaceValueHolders(replaceFor string) {
 	this.replace(this.valueholder, replaceFor)
 }
 
 func (this *GransakFilter) replaceValue() {
 	if len(this.param.parts) == 0 {
-		this.replaceValueHolder(this.param.StrRepresentation)
+		this.replaceValueHolders(this.param.StrRepresentation)
 	} else {
-		for _, value := range this.param.parts {
-			this.template = strings.Replace(this.template, this.valueholder, value, 1)
+		for index, value := range this.param.parts {
+			if isLast(index, this.param.parts) {
+				this.replaceValueHolders(value)
+			} else {
+				this.template = strings.Replace(this.template, this.valueholder, value, 1)
+			}
 		}
 	}
 }
@@ -185,4 +189,8 @@ func isCandidateToOperator(item string) (*Node, bool) {
 		}
 	}
 	return &Node{}, false
+}
+
+func isLast(index int, slice []string) bool {
+	return index == (len(slice) - 1)
 }

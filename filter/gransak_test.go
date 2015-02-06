@@ -268,6 +268,10 @@ func TestGransak(t *testing.T) {
 		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
 	}
 
+	//this doesn work very well
+	//expected = "user_name = 'cone' AND last_name LIKE '%gutierrez%' OR last_name LIKE '%gutierrez%'"
+	//sql = Gransak.ToSql("user_name_eq_and_last_name_cont_any", "%w(cone gutierrez)")
+
 	//Adding a select statement (only if a table name was specified)
 	expected = "SELECT * FROM conejo WHERE user_name LIKE '%cone%' AND last_name = 'gutierrez'"
 	sql = Gransak.Table("conejo").ToSql("user_name_cont_and_last_name_eq", "%w(cone gutierrez)")
