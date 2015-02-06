@@ -28,7 +28,7 @@ Currently gransak transforms a ransack like string into a sql 'where' statement 
       //prints: user_name = 'cone'
     }
     
-Also it can generate rhe complete statement if a table name is specified
+Also it can generate the complete statement if a table name is specified
 e.g.
 
     sql = Gransak.Table("users").ToSql("user_name_eq", "john")
