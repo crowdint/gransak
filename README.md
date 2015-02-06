@@ -33,6 +33,8 @@ e.g.
 
     sql = Gransak.Table("users").ToSql("user_name_eq", "john")
     //returns: SELECT * FROM users WHERE user_name = 'john'
+    
+At this moment Gransak doesn't support associations
 
 ##Operations currently supported
 
@@ -124,3 +126,10 @@ e.g.
 
     Gransak.ToSql("name_cont_and_role_eq", "%w(cone developer)")
     //returns: name LIKE '%cone%' and role = 'developer'
+
+## Contributing
+
+1. Create your feature branch (`git checkout -b feature/my-new-feature`)
+2. Commit your changes (`git commit -am 'Add some feature'`)
+3. Push to the branch (`git push origin feature/my-new-feature`)
+4. Create a new Pull Request
