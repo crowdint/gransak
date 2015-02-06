@@ -5,15 +5,23 @@ import (
 	"strings"
 )
 
-func NewGransak() *Gransak {
-	return &Gransak{
+var Gransak *GransakFilter
+
+func init() {
+	if Gransak == nil {
+		Gransak = NewGransak()
+	}
+}
+
+func NewGransak() *GransakFilter {
+	return &GransakFilter{
 		separator:   "_",
 		placeholder: "{{.}}",
 		valueholder: "{{v}}",
 	}
 }
 
-type Gransak struct {
+type GransakFilter struct {
 	toEvaluate      []string
 	evaluatedTokens []string
 	template        string
@@ -24,7 +32,7 @@ type Gransak struct {
 	param           *gransakParam
 }
 
-func (this *Gransak) ToSql(input string, param interface{}) string {
+func (this *GransakFilter) ToSql(input string, param interface{}) string {
 	this.reset()
 
 	this.tokenize(input)
@@ -56,18 +64,18 @@ func (this *Gransak) ToSql(input string, param interface{}) string {
 	return strings.Trim(this.template, " ")
 }
 
-func (this *Gransak) reset() {
+func (this *GransakFilter) reset() {
 	this.toEvaluate = []string{}
 	this.evaluatedTokens = []string{}
 	this.template = ""
 	this.param = nil
 }
 
-func (this *Gransak) tokenize(input string) {
+func (this *GransakFilter) tokenize(input string) {
 	this.toEvaluate = strings.Split(input, this.separator)
 }
 
-func (this *Gransak) find(nodeParam *Node, pos int) (*Node, bool) {
+func (this *GransakFilter) find(nodeParam *Node, pos int) (*Node, bool) {
 	if pos >= len(this.toEvaluate) {
 		return nil, false
 	}
@@ -101,23 +109,23 @@ func (this *Gransak) find(nodeParam *Node, pos int) (*Node, bool) {
 	return nil, false
 }
 
-func (this *Gransak) appendField() string {
+func (this *GransakFilter) appendField() string {
 	field := this.getLastField()
 	this.template += field + " " + this.placeholder + " "
 	return field
 }
 
-func (this *Gransak) getLastField() string {
+func (this *GransakFilter) getLastField() string {
 	field := strings.Join(this.evaluatedTokens, this.separator)
 	this.evaluatedTokens = []string{}
 	return field
 }
 
-func (this *Gransak) evaluated(token string) {
+func (this *GransakFilter) evaluated(token string) {
 	this.evaluatedTokens = append(this.evaluatedTokens, token)
 }
 
-func (this *Gransak) replace(replace, replaceFor string) {
+func (this *GransakFilter) replace(replace, replaceFor string) {
 	this.template = strings.Replace(
 		this.template,
 		replace,
@@ -126,15 +134,15 @@ func (this *Gransak) replace(replace, replaceFor string) {
 	)
 }
 
-func (this *Gransak) replacePlaceholder(replaceFor string) {
+func (this *GransakFilter) replacePlaceholder(replaceFor string) {
 	this.replace(this.placeholder, replaceFor)
 }
 
-func (this *Gransak) replaceValueHolder(replaceFor string) {
+func (this *GransakFilter) replaceValueHolder(replaceFor string) {
 	this.replace(this.valueholder, replaceFor)
 }
 
-func (this *Gransak) replaceValue() {
+func (this *GransakFilter) replaceValue() {
 	if len(this.param.parts) == 0 {
 		this.replaceValueHolder(this.param.StrRepresentation)
 	} else {
@@ -144,7 +152,7 @@ func (this *Gransak) replaceValue() {
 	}
 }
 
-func (this *Gransak) getCorrectSqlFormat(value string) string {
+func (this *GransakFilter) getCorrectSqlFormat(value string) string {
 	if this.param.kind == "string" {
 		return "'" + value + "'"
 	}
