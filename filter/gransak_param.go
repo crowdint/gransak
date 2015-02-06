@@ -2,12 +2,13 @@ package filter
 
 import (
 	"fmt"
+	"reflect"
 	"regexp"
 	"strconv"
 	"strings"
 )
 
-func newGransakParam(param interface{}, kind string) *gransakParam {
+func newGransakParam(param interface{}, kind reflect.Kind) *gransakParam {
 	ellipsisRx := regexp.MustCompile(`^[\d]+..[\d]+$`)
 
 	arrayRx := regexp.MustCompile(`^\[[\d|,]*\]$`)
@@ -30,7 +31,7 @@ func newGransakParam(param interface{}, kind string) *gransakParam {
 
 type gransakParam struct {
 	value             interface{}
-	kind              string
+	kind              reflect.Kind
 	StrRepresentation string
 	ellipsisRx        *regexp.Regexp
 	arrayRx           *regexp.Regexp
@@ -80,6 +81,10 @@ func (this *gransakParam) getFromEllipsis(param string) (string, bool) {
 }
 
 func (this *gransakParam) getFromArray(param string) (string, bool) {
+	if this.kind == reflect.Slice {
+		param = strings.Replace(param, " ", ",", -1)
+	}
+
 	if this.arrayRx.MatchString(param) {
 		r := regexp.MustCompile(`[\[|\]]`)
 

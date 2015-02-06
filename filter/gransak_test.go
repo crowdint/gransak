@@ -210,8 +210,13 @@ func TestGransak(t *testing.T) {
 		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
 	}
 
-	expected = "age IN (28,29,30)"
 	sql = Gransak.ToSql("age_in", "[28,29,30]")
+
+	if sql != expected {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	}
+
+	sql = Gransak.ToSql("age_in", []int{28, 29, 30})
 
 	if sql != expected {
 		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)

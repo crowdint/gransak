@@ -44,7 +44,7 @@ func (this *GransakFilter) ToSql(input string, param interface{}) string {
 
 	this.tokenize(input)
 
-	this.param = newGransakParam(param, reflect.TypeOf(param).String())
+	this.param = newGransakParam(param, reflect.TypeOf(param).Kind())
 
 	for this.pos = 0; this.pos < len(this.toEvaluate); this.pos++ {
 		token := this.toEvaluate[this.pos]
@@ -166,7 +166,7 @@ func (this *GransakFilter) replaceValue() {
 }
 
 func (this *GransakFilter) getCorrectSqlFormat(value string) string {
-	if this.param.kind == "string" {
+	if this.param.kind == reflect.String {
 		return "'" + value + "'"
 	}
 	return value

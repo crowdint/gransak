@@ -112,6 +112,9 @@ e.g.
     Gransak.ToSql("age_in", "[27,28,29,30]")
     //returns: age IN (27,28,29,30)
 
+    Gransak.ToSql("age_in", []int{27,28,29,30})
+    //returns: age IN (27,28,29,30)
+
 ####cont_any (and its opposite 'not_cont_any'
 
     Gransak.ToSql("user_role_cont_any", "%w(admin developer)")
