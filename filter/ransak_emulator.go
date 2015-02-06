@@ -1,33 +1,33 @@
-package gransak
+package filter
 
 import (
 	"reflect"
 	"strings"
 )
 
-func NewRansakEmulator() *RansakEmulator {
-	return &RansakEmulator{
+func NewGransak() *Gransak {
+	return &Gransak{
 		separator:   "_",
 		placeholder: "{{.}}",
 	}
 }
 
-type RansakEmulator struct {
+type Gransak struct {
 	toEvaluate      []string
 	evaluatedTokens []string
 	template        string
 	separator       string
 	placeholder     string
 	pos             int
-	param           *ransakParam
+	param           *gransakParam
 }
 
-func (this *RansakEmulator) ToSql(input string, param interface{}) string {
+func (this *Gransak) ToSql(input string, param interface{}) string {
 	this.reset()
 
 	this.tokenize(input)
 
-	this.param = newRansackParam(param, reflect.TypeOf(param).String())
+	this.param = newGransakParam(param, reflect.TypeOf(param).String())
 
 	for this.pos = 0; this.pos < len(this.toEvaluate); this.pos++ {
 		token := this.toEvaluate[this.pos]
@@ -54,18 +54,18 @@ func (this *RansakEmulator) ToSql(input string, param interface{}) string {
 	return strings.Trim(this.template, " ")
 }
 
-func (this *RansakEmulator) reset() {
+func (this *Gransak) reset() {
 	this.toEvaluate = []string{}
 	this.evaluatedTokens = []string{}
 	this.template = ""
 	this.param = nil
 }
 
-func (this *RansakEmulator) tokenize(input string) {
+func (this *Gransak) tokenize(input string) {
 	this.toEvaluate = strings.Split(input, this.separator)
 }
 
-func (this *RansakEmulator) find(nodeParam *Node, pos int) (*Node, bool) {
+func (this *Gransak) find(nodeParam *Node, pos int) (*Node, bool) {
 	if pos >= len(this.toEvaluate) {
 		return nil, false
 	}
@@ -99,23 +99,23 @@ func (this *RansakEmulator) find(nodeParam *Node, pos int) (*Node, bool) {
 	return nil, false
 }
 
-func (this *RansakEmulator) appendField() string {
+func (this *Gransak) appendField() string {
 	field := this.getLastField()
 	this.template += field + " " + this.placeholder + " "
 	return field
 }
 
-func (this *RansakEmulator) getLastField() string {
+func (this *Gransak) getLastField() string {
 	field := strings.Join(this.evaluatedTokens, this.separator)
 	this.evaluatedTokens = []string{}
 	return field
 }
 
-func (this *RansakEmulator) evaluated(token string) {
+func (this *Gransak) evaluated(token string) {
 	this.evaluatedTokens = append(this.evaluatedTokens, token)
 }
 
-func (this *RansakEmulator) replacePlaceholder(replaceFor string) {
+func (this *Gransak) replacePlaceholder(replaceFor string) {
 	this.template = strings.Replace(
 		this.template,
 		this.placeholder,
@@ -124,7 +124,7 @@ func (this *RansakEmulator) replacePlaceholder(replaceFor string) {
 	)
 }
 
-func (this *RansakEmulator) replaceValue() {
+func (this *Gransak) replaceValue() {
 	if len(this.param.parts) == 0 {
 		this.replacePlaceholder(this.param.StrRepresentation)
 	} else {
@@ -134,7 +134,7 @@ func (this *RansakEmulator) replaceValue() {
 	}
 }
 
-func (this *RansakEmulator) getCorrectSqlFormat(value string) string {
+func (this *Gransak) getCorrectSqlFormat(value string) string {
 	if this.param.kind == "string" {
 		return "'" + value + "'"
 	}

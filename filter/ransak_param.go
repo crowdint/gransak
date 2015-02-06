@@ -1,4 +1,4 @@
-package gransak
+package filter
 
 import (
 	"fmt"
@@ -7,14 +7,14 @@ import (
 	"strings"
 )
 
-func newRansackParam(param interface{}, kind string) *ransakParam {
+func newGransakParam(param interface{}, kind string) *gransakParam {
 	ellipsisRx := regexp.MustCompile(`^[\d]+..[\d]+$`)
 
 	arrayRx := regexp.MustCompile(`^\[[\d|,]*\]$`)
 
 	wordListRx := regexp.MustCompile(`^\%w\([a-zA-Z\s]+\)$`)
 
-	rparam := &ransakParam{
+	rparam := &gransakParam{
 		value:      param,
 		kind:       kind,
 		ellipsisRx: ellipsisRx,
@@ -28,7 +28,7 @@ func newRansackParam(param interface{}, kind string) *ransakParam {
 	return rparam
 }
 
-type ransakParam struct {
+type gransakParam struct {
 	value             interface{}
 	kind              string
 	StrRepresentation string
@@ -38,7 +38,7 @@ type ransakParam struct {
 	parts             []string
 }
 
-func (this *ransakParam) findStrRepresentation() {
+func (this *gransakParam) findStrRepresentation() {
 	paramStr := fmt.Sprintf("%v", this.value)
 
 	if str, isEllipsis := this.getFromEllipsis(paramStr); isEllipsis {
@@ -59,7 +59,7 @@ func (this *ransakParam) findStrRepresentation() {
 	this.StrRepresentation = paramStr
 }
 
-func (this *ransakParam) getFromEllipsis(param string) (string, bool) {
+func (this *gransakParam) getFromEllipsis(param string) (string, bool) {
 	if this.ellipsisRx.MatchString(param) {
 		values := strings.Split(param, "..")
 
@@ -79,7 +79,7 @@ func (this *ransakParam) getFromEllipsis(param string) (string, bool) {
 	return "", false
 }
 
-func (this *ransakParam) getFromArray(param string) (string, bool) {
+func (this *gransakParam) getFromArray(param string) (string, bool) {
 	if this.arrayRx.MatchString(param) {
 		r := regexp.MustCompile(`[\[|\]]`)
 
@@ -90,7 +90,7 @@ func (this *ransakParam) getFromArray(param string) (string, bool) {
 	return "", false
 }
 
-func (this *ransakParam) getFromWordList(param string) (string, bool) {
+func (this *gransakParam) getFromWordList(param string) (string, bool) {
 	if this.wordListRx.MatchString(param) {
 		param = strings.Replace(param, "%w", "", 1)
 

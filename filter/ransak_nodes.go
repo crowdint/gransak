@@ -1,6 +1,6 @@
-package gransak
+package filter
 
-type OperatorFunction func(re *RansakEmulator)
+type OperatorFunction func(re *Gransak)
 
 type Node struct {
 	Name       string
@@ -14,42 +14,42 @@ var Tree = &Node{
 	Nodes: []*Node{
 		&Node{
 			Name: "or",
-			Apply: func(re *RansakEmulator) {
+			Apply: func(re *Gransak) {
 				re.appendField()
 				re.template += "OR "
 			},
 		},
 		&Node{
 			Name: "and",
-			Apply: func(re *RansakEmulator) {
+			Apply: func(re *Gransak) {
 				re.appendField()
 				re.template += "AND "
 			},
 		},
 		&Node{
 			Name: "eq",
-			Apply: func(re *RansakEmulator) {
+			Apply: func(re *Gransak) {
 				re.appendField()
 				re.replacePlaceholder("= " + re.getCorrectSqlFormat(re.placeholder))
 			},
 		},
 		&Node{
 			Name: "in",
-			Apply: func(re *RansakEmulator) {
+			Apply: func(re *Gransak) {
 				re.appendField()
 				re.replacePlaceholder("IN (" + re.placeholder + ")")
 			},
 		},
 		&Node{
 			Name: "matches",
-			Apply: func(re *RansakEmulator) {
+			Apply: func(re *Gransak) {
 				re.appendField()
 				re.replacePlaceholder("LIKE '" + re.placeholder + "'")
 			},
 		},
 		&Node{
 			Name: "cont",
-			Apply: func(re *RansakEmulator) {
+			Apply: func(re *Gransak) {
 				re.appendField()
 				re.replacePlaceholder("LIKE '%" + re.placeholder + "%'")
 			},
@@ -57,7 +57,7 @@ var Tree = &Node{
 			Nodes: []*Node{
 				&Node{
 					Name: "any",
-					Apply: func(re *RansakEmulator) {
+					Apply: func(re *Gransak) {
 						field := re.getLastField()
 
 						values := re.param.parts
@@ -76,63 +76,63 @@ var Tree = &Node{
 		},
 		&Node{
 			Name: "lt",
-			Apply: func(re *RansakEmulator) {
+			Apply: func(re *Gransak) {
 				re.appendField()
 				re.replacePlaceholder("< " + re.getCorrectSqlFormat(re.placeholder))
 			},
 		},
 		&Node{
 			Name: "lteq",
-			Apply: func(re *RansakEmulator) {
+			Apply: func(re *Gransak) {
 				re.appendField()
 				re.replacePlaceholder("<= " + re.getCorrectSqlFormat(re.placeholder))
 			},
 		},
 		&Node{
 			Name: "gt",
-			Apply: func(re *RansakEmulator) {
+			Apply: func(re *Gransak) {
 				re.appendField()
 				re.replacePlaceholder("> " + re.getCorrectSqlFormat(re.placeholder))
 			},
 		},
 		&Node{
 			Name: "gteq",
-			Apply: func(re *RansakEmulator) {
+			Apply: func(re *Gransak) {
 				re.appendField()
 				re.replacePlaceholder(">= " + re.getCorrectSqlFormat(re.placeholder))
 			},
 		},
 		&Node{
 			Name: "start",
-			Apply: func(re *RansakEmulator) {
+			Apply: func(re *Gransak) {
 				re.appendField()
 				re.replacePlaceholder("LIKE '" + re.placeholder + "%'")
 			},
 		},
 		&Node{
 			Name: "end",
-			Apply: func(re *RansakEmulator) {
+			Apply: func(re *Gransak) {
 				re.appendField()
 				re.replacePlaceholder("LIKE '%" + re.placeholder + "'")
 			},
 		},
 		&Node{
 			Name: "true",
-			Apply: func(re *RansakEmulator) {
+			Apply: func(re *Gransak) {
 				re.appendField()
 				re.replacePlaceholder("= 't'")
 			},
 		},
 		&Node{
 			Name: "false",
-			Apply: func(re *RansakEmulator) {
+			Apply: func(re *Gransak) {
 				re.appendField()
 				re.replacePlaceholder("= 'f'")
 			},
 		},
 		&Node{
 			Name: "present",
-			Apply: func(re *RansakEmulator) {
+			Apply: func(re *Gransak) {
 				field := re.appendField()
 				re.replacePlaceholder("IS NOT NULL AND " + re.placeholder)
 				re.replacePlaceholder(field + " <> ''")
@@ -140,7 +140,7 @@ var Tree = &Node{
 		},
 		&Node{
 			Name: "blank",
-			Apply: func(re *RansakEmulator) {
+			Apply: func(re *Gransak) {
 				field := re.appendField()
 				re.replacePlaceholder("IS NULL OR " + re.placeholder)
 				re.replacePlaceholder(field + " = ''")
@@ -148,7 +148,7 @@ var Tree = &Node{
 		},
 		&Node{
 			Name: "null",
-			Apply: func(re *RansakEmulator) {
+			Apply: func(re *Gransak) {
 				re.appendField()
 				re.replacePlaceholder("IS NULL")
 			},
@@ -158,21 +158,21 @@ var Tree = &Node{
 			Nodes: []*Node{
 				&Node{
 					Name: "eq",
-					Apply: func(re *RansakEmulator) {
+					Apply: func(re *Gransak) {
 						re.appendField()
 						re.replacePlaceholder("<> " + re.getCorrectSqlFormat(re.placeholder))
 					},
 				},
 				&Node{
 					Name: "in",
-					Apply: func(re *RansakEmulator) {
+					Apply: func(re *Gransak) {
 						re.appendField()
 						re.replacePlaceholder("NOT IN (" + re.placeholder + ")")
 					},
 				},
 				&Node{
 					Name: "cont",
-					Apply: func(re *RansakEmulator) {
+					Apply: func(re *Gransak) {
 						re.appendField()
 						re.replacePlaceholder("NOT LIKE '%" + re.placeholder + "%'")
 					},
@@ -180,7 +180,7 @@ var Tree = &Node{
 					Nodes: []*Node{
 						&Node{
 							Name: "any",
-							Apply: func(re *RansakEmulator) {
+							Apply: func(re *Gransak) {
 								field := re.getLastField()
 
 								values := re.param.parts
@@ -199,35 +199,35 @@ var Tree = &Node{
 				},
 				&Node{
 					Name: "start",
-					Apply: func(re *RansakEmulator) {
+					Apply: func(re *Gransak) {
 						re.appendField()
 						re.replacePlaceholder("NOT LIKE '" + re.placeholder + "%'")
 					},
 				},
 				&Node{
 					Name: "end",
-					Apply: func(re *RansakEmulator) {
+					Apply: func(re *Gransak) {
 						re.appendField()
 						re.replacePlaceholder("NOT LIKE '%" + re.placeholder + "'")
 					},
 				},
 				&Node{
 					Name: "true",
-					Apply: func(re *RansakEmulator) {
+					Apply: func(re *Gransak) {
 						re.appendField()
 						re.replacePlaceholder("<> 't'")
 					},
 				},
 				&Node{
 					Name: "false",
-					Apply: func(re *RansakEmulator) {
+					Apply: func(re *Gransak) {
 						re.appendField()
 						re.replacePlaceholder("<> 'f'")
 					},
 				},
 				&Node{
 					Name: "null",
-					Apply: func(re *RansakEmulator) {
+					Apply: func(re *Gransak) {
 						re.appendField()
 						re.replacePlaceholder("IS NOT NULL")
 					},
@@ -242,7 +242,7 @@ var Tree = &Node{
 					Nodes: []*Node{
 						&Node{
 							Name: "match",
-							Apply: func(re *RansakEmulator) {
+							Apply: func(re *Gransak) {
 								re.appendField()
 								re.replacePlaceholder("NOT LIKE '" + re.placeholder + "'")
 							},

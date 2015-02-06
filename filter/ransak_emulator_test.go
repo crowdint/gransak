@@ -1,10 +1,10 @@
-package gransak
+package filter
 
 import (
 	"testing"
 )
 
-func TestQueryParser(t *testing.T) {
+func TestGransak(t *testing.T) {
 	ransak := NewRansakEmulator()
 
 	//cont / or / and
