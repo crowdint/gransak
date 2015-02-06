@@ -30,6 +30,13 @@ type GransakFilter struct {
 	valueholder     string
 	pos             int
 	param           *gransakParam
+	tableName       string
+}
+
+func (this *GransakFilter) Table(tableName string) *GransakFilter {
+	this.tableName = tableName
+
+	return this
 }
 
 func (this *GransakFilter) ToSql(input string, param interface{}) string {
@@ -60,6 +67,10 @@ func (this *GransakFilter) ToSql(input string, param interface{}) string {
 	}
 
 	this.replaceValue()
+
+	this.appendSelectStatement()
+
+	this.tableName = ""
 
 	return strings.Trim(this.template, " ")
 }
@@ -159,6 +170,12 @@ func (this *GransakFilter) getCorrectSqlFormat(value string) string {
 		return "'" + value + "'"
 	}
 	return value
+}
+
+func (this *GransakFilter) appendSelectStatement() {
+	if strings.Trim(this.tableName, " ") != "" {
+		this.template = "SELECT * FROM " + this.tableName + " WHERE " + this.template
+	}
 }
 
 func isCandidateToOperator(item string) (*Node, bool) {
