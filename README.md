@@ -31,12 +31,42 @@ Currently gransak transforms a ransack like string into a sql 'where' statement 
 Also it can generate the complete statement if a table name is specified
 e.g.
 
-    sql = Gransak.Table("users").ToSql("user_name_eq", "john")
-    //returns: SELECT * FROM users WHERE user_name = 'john'
+    sql = Gransak.Table("users").ToSql("user_name_eq", "cone")
+    //returns: SELECT * FROM users WHERE user_name = 'cone'
     
+##Methods
+
+###ToSql
+
+Returns an SQL statement. It takes the ransak query string and the value as parameters 
+
+    sql = Gransak.ToSql("user_name_eq", "cone")
+    //returns: user_name = 'cone'
+ 
+###FromRequest
+
+Resturns an SQL statement. It gets the query strings from a http.Request struct
+
+    func Handler(w http.ResponseWritter, r *http.Request){
+        //request: http://someurl/params?q[user_name_eq]=cone
+        sql = Gransak.FromRequest(r)
+        //returns: user_name = 'cone'
+    }
+
+###FromUrlValues
+
+Returns an SQL statement. It gets the query strings from an url.Values struct
+
+    func Handler(w http.ResponseWritter, r *http.Request){
+        //request: http://someurl/params?q[user_name_eq]=cone
+        values := r.URL.Query()
+        sql = Gransak.FromUrlValues(values)
+        //returns: user_name = 'cone'
+    }
+
 At this moment Gransak doesn't support associations
 
-##Operations currently supported
+##Searching operations currently supported
 
 ###or
 
