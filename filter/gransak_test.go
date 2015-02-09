@@ -1,6 +1,8 @@
 package filter
 
 import (
+	"net/http"
+	"net/http/httptest"
 	"testing"
 )
 
@@ -268,7 +270,7 @@ func TestGransak(t *testing.T) {
 		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
 	}
 
-	//this doesn work very well
+	//this doesn't work very well
 	//expected = "user_name = 'cone' AND last_name LIKE '%gutierrez%' OR last_name LIKE '%gutierrez%'"
 	//sql = Gransak.ToSql("user_name_eq_and_last_name_cont_any", "%w(cone gutierrez)")
 
@@ -284,6 +286,28 @@ func TestGransak(t *testing.T) {
 	//so it must be part of the field's name
 	expected = "field_not_operator = 29"
 	sql = Gransak.ToSql("field_not_operator_eq", 29)
+
+	if sql != expected {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	}
+}
+
+func TestFromRequest(t *testing.T) {
+	var sql string
+
+	handler := func(w http.ResponseWriter, r *http.Request) {
+		sql = Gransak.FromRequest(r)
+	}
+
+	req, err := http.NewRequest("GET", "http://gransak.com/params?q[name_eq]=cone&q[last_name_eq]=Gutierrez", nil)
+	if err != nil {
+		panic(err)
+	}
+
+	w := httptest.NewRecorder()
+	handler(w, req)
+
+	expected := "name = 'cone' AND last_name = 'Gutierrez'"
 
 	if sql != expected {
 		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)

@@ -13,7 +13,7 @@ func newGransakParam(param interface{}, kind reflect.Kind) *gransakParam {
 
 	arrayRx := regexp.MustCompile(`^\[[\d|,]*\]$`)
 
-	wordListRx := regexp.MustCompile(`^\%w\([a-zA-Z\s]+\)$`)
+	wordListRx := regexp.MustCompile(`^\%w\([\w\s]+\)$`)
 
 	rparam := &gransakParam{
 		value:      param,

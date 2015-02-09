@@ -1,6 +1,8 @@
 package filter
 
 import (
+	"net/http"
+	"net/url"
 	"reflect"
 	"strings"
 )
@@ -37,6 +39,14 @@ func (this *GransakFilter) Table(tableName string) *GransakFilter {
 	this.tableName = tableName
 
 	return this
+}
+
+func (this *GransakFilter) FromRequest(r *http.Request) string {
+	return parseRequest(r)
+}
+
+func (this *GransakFilter) FromUrlValues(v url.Values) string {
+	return parseUrlValues(v)
 }
 
 func (this *GransakFilter) ToSql(input string, param interface{}) string {
