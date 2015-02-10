@@ -2,6 +2,13 @@
 
 ###Ransack to SQL, parser for Golang
 
+Gransak was born for the need of a replacement for ransack. This was because we needed a way to keep the searching functionality of a previous Rails app we were migrating to Golang and we found no similar library.
+
+So we decided to create a library to transform a ransak like string to a Sql statement an be able to use it in a normal query to a database using golang. We also found useful to generate only the 'WERE' part of the query to be able to use it with ``gorm`` (https://github.com/jinzhu/gorm) e.g.
+
+        query := Gransak.ToSql(ransakQuery)
+        db.Were(query).Find(&users)
+
 ##Install
 
 Download the repository with:
