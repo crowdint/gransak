@@ -2,6 +2,7 @@ package filter
 
 import (
 	"net/url"
+	"strings"
 	"testing"
 )
 
@@ -13,13 +14,28 @@ func TestRequestParser(t *testing.T) {
 		"q[last_name_eq]": []string{
 			"Gutierrez",
 		},
+		"q[cp_eq]": []string{
+			"10289",
+		},
 	}
-
-	expected := "name = 'cone' AND last_name = 'Gutierrez'"
 
 	got := parseUrlValues(params)
 
-	if expected != got {
-		t.Errorf("Mistach, wanted: %s got: %s", expected, got)
+	substring := "last_name = 'Gutierrez'"
+
+	if !strings.Contains(got, substring) {
+		t.Errorf("Response: %s, doesn not contain substring: %s", got, substring)
+	}
+
+	substring = "name = 'cone'"
+
+	if !strings.Contains(got, substring) {
+		t.Errorf("Response: %s, doesn not contain substring: %s", got, substring)
+	}
+
+	substring = "cp = 10289"
+
+	if !strings.Contains(got, substring) {
+		t.Errorf("Response: %s, doesn not contain substring: %s", got, substring)
 	}
 }

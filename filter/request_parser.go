@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -28,7 +29,7 @@ func getGransakQuery(params *url.Values) string {
 			temp = strings.Replace(key, "q[", "", 1)
 			temp = strings.Replace(temp, "]", "", 1)
 
-			sql = Gransak.ToSql(temp, value[0])
+			sql = getSqlString(temp, value[0])
 
 			if strings.Trim(sql, " ") != "" {
 				statements = append(statements, sql)
@@ -37,4 +38,17 @@ func getGransakQuery(params *url.Values) string {
 	}
 
 	return strings.Join(statements, " AND ")
+}
+
+func getSqlString(query, value string) string {
+
+	if intVal, err := strconv.ParseInt(value, 0, 64); err == nil {
+		return Gransak.ToSql(query, intVal)
+	}
+
+	if floatVal, err := strconv.ParseFloat(value, 64); err == nil {
+		return Gransak.ToSql(query, floatVal)
+	}
+
+	return Gransak.ToSql(query, value)
 }

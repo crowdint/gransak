@@ -9,7 +9,7 @@ import (
 )
 
 func newGransakParam(param interface{}, kind reflect.Kind) *gransakParam {
-	ellipsisRx := regexp.MustCompile(`^[\d]+..[\d]+$`)
+	ellipsisRx := regexp.MustCompile(`^[\d]+[.]{2}[\d]+$`)
 
 	arrayRx := regexp.MustCompile(`^\[[\d|,]*\]$`)
 
