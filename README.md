@@ -52,6 +52,14 @@ Resturns an SQL statement. It gets the query strings from a http.Request struct
         sql = Gransak.FromRequest(r)
         //returns: user_name = 'cone'
     }
+    
+We can chain several statements too
+
+    func Handler(w http.ResponseWritter, r *http.Request){
+        //request: http://someurl/params?q[user_name_eq]=cone&q[role_cont]=admin
+        sql = Gransak.FromRequest(r)
+        //returns: user_name = 'cone' AND role LIKE %admin%
+    }
 
 ###FromUrlValues
 
