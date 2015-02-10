@@ -5,10 +5,10 @@
 ##Install
 
 Download the repository with:
-``go get github.com/crowdint/gransak``
+``go get github.com/crowdint/gransak/filter``
 
 Then include the project inside your project like this:
-``import "github.com/crowdint/gransak"``
+``import "github.com/crowdint/gransak/filter"``
 
 ##What it does
 
