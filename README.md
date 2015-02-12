@@ -5,10 +5,10 @@
 ##Install
 
 Download the repository with:
-``go get github.com/crowdint/gransak/filter``
+``go get github.com/crowdint/gransak``
 
 Then include the project inside your project like this:
-``import "github.com/crowdint/gransak/filter"``
+``import "github.com/crowdint/gransak"``
 
 ##What it does
 
@@ -17,7 +17,7 @@ Currently gransak transforms a ransack like string into a sql 'where' statement 
     package main
 
     import (
-      . "github.com/crowdint/gransak/filter"
+      . "github.com/crowdint/gransak"
       "fmt"
     )
     

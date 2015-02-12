@@ -1,29 +1,19 @@
-package filter
+package core
 
 import (
-	"net/http"
-	"net/url"
 	"reflect"
 	"strings"
 )
 
-var Gransak *GransakFilter
-
-func init() {
-	if Gransak == nil {
-		Gransak = NewGransak()
-	}
-}
-
-func NewGransak() *GransakFilter {
-	return &GransakFilter{
+func NewGransak() *GransakCore {
+	return &GransakCore{
 		separator:   "_",
 		placeholder: "{{.}}",
 		valueholder: "{{v}}",
 	}
 }
 
-type GransakFilter struct {
+type GransakCore struct {
 	toEvaluate      []string
 	evaluatedTokens []string
 	template        string
@@ -35,21 +25,13 @@ type GransakFilter struct {
 	tableName       string
 }
 
-func (this *GransakFilter) Table(tableName string) *GransakFilter {
+func (this *GransakCore) Table(tableName string) *GransakCore {
 	this.tableName = tableName
 
 	return this
 }
 
-func (this *GransakFilter) FromRequest(r *http.Request) string {
-	return parseRequest(r)
-}
-
-func (this *GransakFilter) FromUrlValues(v url.Values) string {
-	return parseUrlValues(v)
-}
-
-func (this *GransakFilter) ToSql(input string, param interface{}) string {
+func (this *GransakCore) ToSql(input string, param interface{}) string {
 	this.reset()
 
 	this.tokenize(input)
@@ -85,18 +67,18 @@ func (this *GransakFilter) ToSql(input string, param interface{}) string {
 	return strings.Trim(this.template, " ")
 }
 
-func (this *GransakFilter) reset() {
+func (this *GransakCore) reset() {
 	this.toEvaluate = []string{}
 	this.evaluatedTokens = []string{}
 	this.template = ""
 	this.param = nil
 }
 
-func (this *GransakFilter) tokenize(input string) {
+func (this *GransakCore) tokenize(input string) {
 	this.toEvaluate = strings.Split(input, this.separator)
 }
 
-func (this *GransakFilter) find(nodeParam *Node, pos int) (*Node, bool) {
+func (this *GransakCore) find(nodeParam *Node, pos int) (*Node, bool) {
 	if pos >= len(this.toEvaluate) {
 		return nil, false
 	}
@@ -130,7 +112,7 @@ func (this *GransakFilter) find(nodeParam *Node, pos int) (*Node, bool) {
 	return nil, false
 }
 
-func (this *GransakFilter) appendField() string {
+func (this *GransakCore) appendField() string {
 	field := this.getLastField()
 	if field != "" {
 		this.template += field + " " + this.placeholder + " "
@@ -138,17 +120,17 @@ func (this *GransakFilter) appendField() string {
 	return field
 }
 
-func (this *GransakFilter) getLastField() string {
+func (this *GransakCore) getLastField() string {
 	field := strings.Join(this.evaluatedTokens, this.separator)
 	this.evaluatedTokens = []string{}
 	return field
 }
 
-func (this *GransakFilter) evaluated(token string) {
+func (this *GransakCore) evaluated(token string) {
 	this.evaluatedTokens = append(this.evaluatedTokens, token)
 }
 
-func (this *GransakFilter) replace(replace, replaceFor string) {
+func (this *GransakCore) replace(replace, replaceFor string) {
 	this.template = strings.Replace(
 		this.template,
 		replace,
@@ -157,15 +139,15 @@ func (this *GransakFilter) replace(replace, replaceFor string) {
 	)
 }
 
-func (this *GransakFilter) replacePlaceholder(replaceFor string) {
+func (this *GransakCore) replacePlaceholder(replaceFor string) {
 	this.replace(this.placeholder, replaceFor)
 }
 
-func (this *GransakFilter) replaceValueHolders(replaceFor string) {
+func (this *GransakCore) replaceValueHolders(replaceFor string) {
 	this.replace(this.valueholder, replaceFor)
 }
 
-func (this *GransakFilter) replaceValue() {
+func (this *GransakCore) replaceValue() {
 	if len(this.param.parts) == 0 {
 		this.replaceValueHolders(this.param.StrRepresentation)
 	} else {
@@ -179,14 +161,14 @@ func (this *GransakFilter) replaceValue() {
 	}
 }
 
-func (this *GransakFilter) getCorrectSqlFormat(value string) string {
+func (this *GransakCore) getCorrectSqlFormat(value string) string {
 	if this.param.kind == reflect.String {
 		return "'" + value + "'"
 	}
 	return value
 }
 
-func (this *GransakFilter) appendSelectStatement() {
+func (this *GransakCore) appendSelectStatement() {
 	if strings.Trim(this.tableName, " ") != "" {
 		this.template = "SELECT * FROM " + this.tableName + " WHERE " + this.template
 	}
