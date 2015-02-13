@@ -21,8 +21,8 @@ func TestGransak(t *testing.T) {
 	sql, params = Gransak.ToSql("first_name_and_last_name_cont", "cone")
 	strParams = toString(params)
 
-	if sql != expected {
-		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	if sql != expected || strParams != "[%cone%]" {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
 	//not_cont / or / and
@@ -30,8 +30,8 @@ func TestGransak(t *testing.T) {
 	sql, params = Gransak.ToSql("first_name_or_last_name_not_cont", "cone")
 	strParams = toString(params)
 
-	if sql != expected {
-		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	if sql != expected || strParams != "[%cone%]" {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
 	//matches / or
@@ -39,8 +39,8 @@ func TestGransak(t *testing.T) {
 	sql, params = Gransak.ToSql("first_name_or_last_name_matches", "cone")
 	strParams = toString(params)
 
-	if sql != expected {
-		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	if sql != expected || strParams != "[cone]" {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
 	//does_not_match / or
@@ -48,8 +48,8 @@ func TestGransak(t *testing.T) {
 	sql, params = Gransak.ToSql("first_name_or_last_name_does_not_match", "cone")
 	strParams = toString(params)
 
-	if sql != expected {
-		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	if sql != expected || strParams != "[cone]" {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
 	//lt
@@ -57,8 +57,8 @@ func TestGransak(t *testing.T) {
 	sql, params = Gransak.ToSql("age_lt", 29)
 	strParams = toString(params)
 
-	if sql != expected {
-		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	if sql != expected || strParams != "[29]" {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
 	//gt
@@ -66,8 +66,8 @@ func TestGransak(t *testing.T) {
 	sql, params = Gransak.ToSql("age_gt", 29)
 	strParams = toString(params)
 
-	if sql != expected {
-		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	if sql != expected || strParams != "[29]" {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
 	//lteq
@@ -75,8 +75,8 @@ func TestGransak(t *testing.T) {
 	sql, params = Gransak.ToSql("age_lteq", 29)
 	strParams = toString(params)
 
-	if sql != expected {
-		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	if sql != expected || strParams != "[29]" {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
 	//gteq
@@ -84,8 +84,8 @@ func TestGransak(t *testing.T) {
 	sql, params = Gransak.ToSql("age_gteq", 29)
 	strParams = toString(params)
 
-	if sql != expected {
-		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	if sql != expected || strParams != "[29]" {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
 	//eq / or / and
@@ -93,24 +93,24 @@ func TestGransak(t *testing.T) {
 	sql, params = Gransak.ToSql("first_name_and_last_name_eq", "cone")
 	strParams = toString(params)
 
-	if sql != expected {
-		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	if sql != expected || strParams != "[cone]" {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
 	expected = "age = {{v}}"
 	sql, params = Gransak.ToSql("age_eq", 29)
 	strParams = toString(params)
 
-	if sql != expected {
-		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	if sql != expected || strParams != "[29]" {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
 	expected = "age = {{v}} OR years = {{v}}"
 	sql, params = Gransak.ToSql("age_or_years_eq", 29)
 	strParams = toString(params)
 
-	if sql != expected {
-		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	if sql != expected || strParams != "[29]" {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
 	//not_eq / or
@@ -118,8 +118,8 @@ func TestGransak(t *testing.T) {
 	sql, params = Gransak.ToSql("age_or_years_not_eq", 29)
 	strParams = toString(params)
 
-	if sql != expected {
-		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	if sql != expected || strParams != "[29]" {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
 	//start
@@ -127,8 +127,8 @@ func TestGransak(t *testing.T) {
 	sql, params = Gransak.ToSql("name_start", "cone")
 	strParams = toString(params)
 
-	if sql != expected {
-		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	if sql != expected || strParams != "[cone%]" {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
 	//not_start
@@ -136,8 +136,8 @@ func TestGransak(t *testing.T) {
 	sql, params = Gransak.ToSql("name_not_start", "cone")
 	strParams = toString(params)
 
-	if sql != expected {
-		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	if sql != expected || strParams != "[cone%]" {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
 	//end
@@ -145,8 +145,9 @@ func TestGransak(t *testing.T) {
 	sql, params = Gransak.ToSql("name_end", "cone")
 	strParams = toString(params)
 
-	if sql != expected {
-		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	if sql != expected || strParams != "[%cone]" {
+
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
 	//not_end
@@ -154,8 +155,8 @@ func TestGransak(t *testing.T) {
 	sql, params = Gransak.ToSql("name_not_end", "cone")
 	strParams = toString(params)
 
-	if sql != expected {
-		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	if sql != expected || strParams != "[%cone]" {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
 	//true
@@ -163,8 +164,8 @@ func TestGransak(t *testing.T) {
 	sql, params = Gransak.ToSql("is_programmer_true", "1")
 	strParams = toString(params)
 
-	if sql != expected {
-		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	if sql != expected || strParams != "[]" {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
 	//not_true
@@ -172,8 +173,8 @@ func TestGransak(t *testing.T) {
 	sql, params = Gransak.ToSql("is_programmer_not_true", "1")
 	strParams = toString(params)
 
-	if sql != expected {
-		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	if sql != expected || strParams != "[]" {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
 	//false
@@ -181,8 +182,8 @@ func TestGransak(t *testing.T) {
 	sql, params = Gransak.ToSql("is_programmer_false", "1")
 	strParams = toString(params)
 
-	if sql != expected {
-		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	if sql != expected || strParams != "[]" {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
 	//not_false
@@ -190,8 +191,8 @@ func TestGransak(t *testing.T) {
 	sql, params = Gransak.ToSql("is_programmer_not_false", "1")
 	strParams = toString(params)
 
-	if sql != expected {
-		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	if sql != expected || strParams != "[]" {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
 	//present
@@ -199,8 +200,8 @@ func TestGransak(t *testing.T) {
 	sql, params = Gransak.ToSql("required_field_present", "1")
 	strParams = toString(params)
 
-	if sql != expected {
-		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	if sql != expected || strParams != "[]" {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
 	//blank
@@ -208,8 +209,8 @@ func TestGransak(t *testing.T) {
 	sql, params = Gransak.ToSql("required_field_blank", "1")
 	strParams = toString(params)
 
-	if sql != expected {
-		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	if sql != expected || strParams != "[]" {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
 	//null
@@ -217,8 +218,8 @@ func TestGransak(t *testing.T) {
 	sql, params = Gransak.ToSql("required_field_null", "1")
 	strParams = toString(params)
 
-	if sql != expected {
-		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	if sql != expected || strParams != "[]" {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
 	//not_null
@@ -226,8 +227,8 @@ func TestGransak(t *testing.T) {
 	sql, params = Gransak.ToSql("required_field_not_null", "1")
 	strParams = toString(params)
 
-	if sql != expected {
-		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	if sql != expected || strParams != "[]" {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
 	//in
@@ -235,22 +236,22 @@ func TestGransak(t *testing.T) {
 	sql, params = Gransak.ToSql("age_in", "28..30")
 	strParams = toString(params)
 
-	if sql != expected {
-		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	if sql != expected || strParams != "[28 29 30]" {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
 	sql, params = Gransak.ToSql("age_in", "[28,29,30]")
 	strParams = toString(params)
 
-	if sql != expected {
-		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	if sql != expected || strParams != "[28 29 30]" {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
 	sql, params = Gransak.ToSql("age_in", []int{28, 29, 30})
 	strParams = toString(params)
 
-	if sql != expected {
-		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	if sql != expected || strParams != "[28 29 30]" {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
 	//not_in
@@ -258,15 +259,15 @@ func TestGransak(t *testing.T) {
 	sql, params = Gransak.ToSql("age_not_in", "28..30")
 	strParams = toString(params)
 
-	if sql != expected {
-		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	if sql != expected || strParams != "[28 29 30]" {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
 	sql, params = Gransak.ToSql("age_not_in", "[28,29,30]")
 	strParams = toString(params)
 
-	if sql != expected {
-		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	if sql != expected || strParams != "[28 29 30]" {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
 	//cont_any
@@ -274,8 +275,8 @@ func TestGransak(t *testing.T) {
 	sql, params = Gransak.ToSql("user_name_cont_any", "%w(cone carlos)")
 	strParams = toString(params)
 
-	if sql != expected {
-		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	if sql != expected || strParams != "[%cone %carlos]" {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
 	//not_cont_any
@@ -283,38 +284,9 @@ func TestGransak(t *testing.T) {
 	sql, params = Gransak.ToSql("user_name_not_cont_any", "%w(cone carlos)")
 	strParams = toString(params)
 
-	if sql != expected {
-		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	if sql != expected || strParams != "[%cone% %carlos%]" {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
-
-	//we can even do this
-	expected = "user_name LIKE {{v}} AND last_name = {{v}}"
-	sql, params = Gransak.ToSql("user_name_cont_and_last_name_eq", "%w(cone gutierrez)")
-	strParams = toString(params)
-
-	if sql != expected {
-		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
-	}
-
-	expected = "user_name LIKE {{v}} AND last_name IS NOT NULL AND last_name <> ''"
-	sql, params = Gransak.ToSql("user_name_cont_and_last_name_present", "cone")
-	strParams = toString(params)
-
-	if sql != expected {
-		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
-	}
-
-	//this doesn't work very well
-	//expected = "user_name = '{{v}}' AND last_name LIKE '%gutierrez%' OR last_name LIKE '%gutierrez%'"
-	//sql = Gransak.ToSql("user_name_eq_and_last_name_cont_any", "%w(cone gutierrez)")
-
-	//Adding a select statement (only if a table name was specified)
-	//expected = "SELECT * FROM conejo WHERE user_name LIKE '%{{v}}%' AND last_name = 'gutierrez'"
-	//sql, params = Gransak.Table("conejo").ToSql("user_name_cont_and_last_name_eq", "%w(cone gutierrez)")
-
-	//if sql != expected {
-	//t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
-	//}
 
 	//Has word "not" but is not "not_equal" nor "not_in"
 	//so it must be part of the field's name
@@ -322,8 +294,8 @@ func TestGransak(t *testing.T) {
 	sql, params = Gransak.ToSql("field_not_operator_eq", 29)
 	strParams = toString(params)
 
-	if sql != expected {
-		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	if sql != expected || strParams != "[29]" {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
 	//t.Error("stop")
