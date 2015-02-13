@@ -22,6 +22,10 @@ func init() {
 	}
 }
 
+func (this *GransakFilter) ToSql(r *http.Request) string {
+	return this.Parse()
+}
+
 func (this *GransakFilter) FromRequest(r *http.Request) string {
 	return parseRequest(r)
 }

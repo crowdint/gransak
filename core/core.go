@@ -31,7 +31,7 @@ func (this *GransakCore) Table(tableName string) *GransakCore {
 	return this
 }
 
-func (this *GransakCore) ToSql(input string, param interface{}) string {
+func (this *GransakCore) Parse(input string, param interface{}) string {
 	this.reset()
 
 	this.tokenize(input)
