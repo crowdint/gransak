@@ -22,6 +22,7 @@ type GransakCore struct {
 	pos             int
 	tableName       string
 	param           *gransakParam
+	statements      int
 }
 
 func (this *GransakCore) Table(tableName string) *GransakCore {
@@ -59,6 +60,8 @@ func (this *GransakCore) Parse(input string, param interface{}) (string, []inter
 
 	this.appendSelectStatement()
 
+	this.adjustParameters()
+
 	this.tableName = ""
 
 	return strings.Trim(this.template, " "), this.param.parts
@@ -68,6 +71,7 @@ func (this *GransakCore) reset() {
 	this.toEvaluate = []string{}
 	this.evaluatedTokens = []string{}
 	this.template = ""
+	this.statements = 0
 }
 
 func (this *GransakCore) tokenize(input string) {
@@ -110,6 +114,9 @@ func (this *GransakCore) find(nodeParam *Node, pos int) (*Node, bool) {
 
 func (this *GransakCore) appendField() string {
 	field := this.getLastField()
+
+	this.statements++
+
 	if field != "" {
 		this.template += field + " " + this.placeholder + " "
 	}
@@ -146,6 +153,18 @@ func (this *GransakCore) replaceValueHolders(replaceFor string) {
 func (this *GransakCore) appendSelectStatement() {
 	if strings.Trim(this.tableName, " ") != "" {
 		this.template = "SELECT * FROM " + this.tableName + " WHERE " + this.template
+	}
+}
+
+func (this *GransakCore) adjustParameters() {
+	numParams := len(this.param.parts)
+
+	if numParams < this.statements && len(this.param.parts) > 0 {
+		repeatedvalue := this.param.parts[len(this.param.parts)-1]
+		dif := this.statements - numParams
+		for i := 0; i < dif; i++ {
+			this.param.parts = append(this.param.parts, repeatedvalue)
+		}
 	}
 }
 

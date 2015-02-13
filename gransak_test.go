@@ -13,7 +13,7 @@ func TestGransak(t *testing.T) {
 	sql, params := Gransak.ToSql("first_name_or_last_name_cont", "cone")
 	strParams := toString(params)
 
-	if sql != expected || strParams != "[%cone%]" {
+	if sql != expected || strParams != "[%cone% %cone%]" {
 		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
@@ -21,7 +21,7 @@ func TestGransak(t *testing.T) {
 	sql, params = Gransak.ToSql("first_name_and_last_name_cont", "cone")
 	strParams = toString(params)
 
-	if sql != expected || strParams != "[%cone%]" {
+	if sql != expected || strParams != "[%cone% %cone%]" {
 		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
@@ -30,7 +30,7 @@ func TestGransak(t *testing.T) {
 	sql, params = Gransak.ToSql("first_name_or_last_name_not_cont", "cone")
 	strParams = toString(params)
 
-	if sql != expected || strParams != "[%cone%]" {
+	if sql != expected || strParams != "[%cone% %cone%]" {
 		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
@@ -39,7 +39,7 @@ func TestGransak(t *testing.T) {
 	sql, params = Gransak.ToSql("first_name_or_last_name_matches", "cone")
 	strParams = toString(params)
 
-	if sql != expected || strParams != "[cone]" {
+	if sql != expected || strParams != "[cone cone]" {
 		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
@@ -48,7 +48,7 @@ func TestGransak(t *testing.T) {
 	sql, params = Gransak.ToSql("first_name_or_last_name_does_not_match", "cone")
 	strParams = toString(params)
 
-	if sql != expected || strParams != "[cone]" {
+	if sql != expected || strParams != "[cone cone]" {
 		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
@@ -93,7 +93,7 @@ func TestGransak(t *testing.T) {
 	sql, params = Gransak.ToSql("first_name_and_last_name_eq", "cone")
 	strParams = toString(params)
 
-	if sql != expected || strParams != "[cone]" {
+	if sql != expected || strParams != "[cone cone]" {
 		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
@@ -109,7 +109,7 @@ func TestGransak(t *testing.T) {
 	sql, params = Gransak.ToSql("age_or_years_eq", 29)
 	strParams = toString(params)
 
-	if sql != expected || strParams != "[29]" {
+	if sql != expected || strParams != "[29 29]" {
 		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
@@ -118,7 +118,7 @@ func TestGransak(t *testing.T) {
 	sql, params = Gransak.ToSql("age_or_years_not_eq", 29)
 	strParams = toString(params)
 
-	if sql != expected || strParams != "[29]" {
+	if sql != expected || strParams != "[29 29]" {
 		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
@@ -298,7 +298,6 @@ func TestGransak(t *testing.T) {
 		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
-	//t.Error("stop")
 }
 
 //func TestFromRequest(t *testing.T) {
