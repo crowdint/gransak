@@ -48,7 +48,7 @@ func TestGransakParam(t *testing.T) {
 
 	//word list parameter
 	paramStr = "%w(cone gutierrez)"
-	wanted = "%w(cone gutierrez)"
+	wanted = "w(cone gutierrez)"
 
 	param = newGransakParam(paramStr, reflect.String)
 

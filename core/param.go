@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+var injectionCharacters = regexp.MustCompile(`['|"|\\|%|\_|\-|/|;]`)
+
 func newGransakParam(param interface{}, kind reflect.Kind) *gransakParam {
 	ellipsisRx := regexp.MustCompile(`^[\d]+[.]{2}[\d]+$`)
 
@@ -57,7 +59,7 @@ func (this *gransakParam) findStrRepresentation() {
 		return
 	}
 
-	this.StrRepresentation = paramStr
+	this.StrRepresentation = sanitize(paramStr)
 }
 
 func (this *gransakParam) getFromEllipsis(param string) (string, bool) {
@@ -103,7 +105,15 @@ func (this *gransakParam) getFromWordList(param string) (string, bool) {
 
 		param = r.ReplaceAllString(param, "")
 
-		this.parts = strings.Split(param, " ")
+		parts := strings.Split(param, " ")
+
+		for _, part := range parts {
+			this.parts = append(this.parts, sanitize(part))
+		}
 	}
 	return "", false
+}
+
+func sanitize(value string) string {
+	return injectionCharacters.ReplaceAllString(value, "")
 }
