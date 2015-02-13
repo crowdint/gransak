@@ -21,7 +21,7 @@ type GransakCore struct {
 	valueholder     string
 	pos             int
 	tableName       string
-	paramsLength    int
+	param           *gransakParam
 }
 
 func (this *GransakCore) Table(tableName string) *GransakCore {
@@ -30,12 +30,12 @@ func (this *GransakCore) Table(tableName string) *GransakCore {
 	return this
 }
 
-func (this *GransakCore) Parse(input string, paramsLength int) string {
+func (this *GransakCore) Parse(input string, param interface{}) (string, []interface{}) {
 	this.reset()
 
-	this.paramsLength = paramsLength
-
 	this.tokenize(input)
+
+	this.param = newGransakParam(param)
 
 	for this.pos = 0; this.pos < len(this.toEvaluate); this.pos++ {
 		token := this.toEvaluate[this.pos]
@@ -61,7 +61,7 @@ func (this *GransakCore) Parse(input string, paramsLength int) string {
 
 	this.tableName = ""
 
-	return strings.Trim(this.template, " ")
+	return strings.Trim(this.template, " "), this.param.parts
 }
 
 func (this *GransakCore) reset() {

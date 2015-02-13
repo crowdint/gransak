@@ -3,7 +3,6 @@ package gransak
 import (
 	//"net/http"
 	//"net/url"
-	"reflect"
 
 	"github.com/crowdint/gransak/core"
 )
@@ -24,8 +23,7 @@ func init() {
 }
 
 func (this *GransakFilter) ToSql(input string, param interface{}) (string, []interface{}) {
-	paramSlice := newGransakParam(param, reflect.TypeOf(param).Kind())
-	return this.Parse(input, len(paramSlice.parts)), paramSlice.parts
+	return this.Parse(input, param)
 }
 
 //func (this *GransakFilter) FromRequest(r *http.Request) string {
