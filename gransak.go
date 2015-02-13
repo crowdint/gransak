@@ -1,8 +1,9 @@
 package gransak
 
 import (
-	"net/http"
-	"net/url"
+	//"net/http"
+	//"net/url"
+	"reflect"
 
 	"github.com/crowdint/gransak/core"
 )
@@ -22,14 +23,15 @@ func init() {
 	}
 }
 
-func (this *GransakFilter) ToSql(r *http.Request) string {
-	return this.Parse()
+func (this *GransakFilter) ToSql(input string, param interface{}) (string, []interface{}) {
+	paramSlice := newGransakParam(param, reflect.TypeOf(param).Kind())
+	return this.Parse(input, len(paramSlice.parts)), paramSlice.parts
 }
 
-func (this *GransakFilter) FromRequest(r *http.Request) string {
-	return parseRequest(r)
-}
+//func (this *GransakFilter) FromRequest(r *http.Request) string {
+//return parseRequest(r)
+//}
 
-func (this *GransakFilter) FromUrlValues(v url.Values) string {
-	return parseUrlValues(v)
-}
+//func (this *GransakFilter) FromUrlValues(v url.Values) string {
+//return parseUrlValues(v)
+//}

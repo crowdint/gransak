@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-const (
+var (
 	ellipsisRx = regexp.MustCompile(`^[\d]+[.]{2}[\d]+$`)
 	arrayRx    = regexp.MustCompile(`^\[[\d|,]*\]$`)
 	wordListRx = regexp.MustCompile(`^\%w\([\w\s]+\)$`)
@@ -35,7 +35,13 @@ type gransakParam struct {
 
 func (this *gransakParam) findStrRepresentation() {
 	if this.kind == reflect.Slice {
-		this.parts = value
+		t := reflect.ValueOf(this.value)
+		length := t.Len()
+		//log.Printf("================LENGTH = %d", length)
+		for i := 0; i < length; i++ {
+			this.parts = append(this.parts, t.Index(i).Interface())
+		}
+		//this.parts = this.value
 		return
 	}
 
@@ -55,7 +61,7 @@ func (this *gransakParam) findStrRepresentation() {
 }
 
 func (this *gransakParam) getFromEllipsis(param string) bool {
-	if this.ellipsisRx.MatchString(param) {
+	if ellipsisRx.MatchString(param) {
 		values := strings.Split(param, "..")
 
 		//if it wasn't a number, the regexp would have failed,
@@ -71,7 +77,7 @@ func (this *gransakParam) getFromEllipsis(param string) bool {
 }
 
 func (this *gransakParam) getFromArray(param string) bool {
-	if this.arrayRx.MatchString(param) {
+	if arrayRx.MatchString(param) {
 		r := regexp.MustCompile(`[\[|\]]`)
 
 		param = r.ReplaceAllString(param, "")
@@ -88,14 +94,18 @@ func (this *gransakParam) getFromArray(param string) bool {
 }
 
 func (this *gransakParam) getFromWordList(param string) bool {
-	if this.wordListRx.MatchString(param) {
+	if wordListRx.MatchString(param) {
 		param = strings.Replace(param, "%w", "", 1)
 
 		r := regexp.MustCompile(`[\(|\)]`)
 
 		param = r.ReplaceAllString(param, "")
 
-		this.parts = strings.Split(param, " ")
+		parts := strings.Split(param, " ")
+
+		for _, part := range parts {
+			this.parts = append(this.parts, part)
+		}
 	}
 	return false
 }

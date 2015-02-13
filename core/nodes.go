@@ -30,7 +30,7 @@ var Tree = &Node{
 			Name: "eq",
 			Apply: func(re *GransakCore) {
 				re.appendField()
-				re.replacePlaceholder("= " + re.getCorrectSqlFormat(re.valueholder))
+				re.replacePlaceholder("= " + re.valueholder)
 			},
 		},
 		&Node{
@@ -60,8 +60,7 @@ var Tree = &Node{
 					Apply: func(re *GransakCore) {
 						field := re.getLastField()
 
-						values := re.param.parts
-						times := len(values) - 1
+						times := re.paramsLength - 1
 
 						statement := field + " LIKE '%" + re.valueholder + "%'"
 
@@ -78,28 +77,28 @@ var Tree = &Node{
 			Name: "lt",
 			Apply: func(re *GransakCore) {
 				re.appendField()
-				re.replacePlaceholder("< " + re.getCorrectSqlFormat(re.valueholder))
+				re.replacePlaceholder("< " + re.valueholder)
 			},
 		},
 		&Node{
 			Name: "lteq",
 			Apply: func(re *GransakCore) {
 				re.appendField()
-				re.replacePlaceholder("<= " + re.getCorrectSqlFormat(re.valueholder))
+				re.replacePlaceholder("<= " + re.valueholder)
 			},
 		},
 		&Node{
 			Name: "gt",
 			Apply: func(re *GransakCore) {
 				re.appendField()
-				re.replacePlaceholder("> " + re.getCorrectSqlFormat(re.valueholder))
+				re.replacePlaceholder("> " + re.valueholder)
 			},
 		},
 		&Node{
 			Name: "gteq",
 			Apply: func(re *GransakCore) {
 				re.appendField()
-				re.replacePlaceholder(">= " + re.getCorrectSqlFormat(re.valueholder))
+				re.replacePlaceholder(">= " + re.valueholder)
 			},
 		},
 		&Node{
@@ -159,7 +158,7 @@ var Tree = &Node{
 					Name: "eq",
 					Apply: func(re *GransakCore) {
 						re.appendField()
-						re.replacePlaceholder("<> " + re.getCorrectSqlFormat(re.valueholder))
+						re.replacePlaceholder("<> " + re.valueholder)
 					},
 				},
 				&Node{
@@ -182,8 +181,7 @@ var Tree = &Node{
 							Apply: func(re *GransakCore) {
 								field := re.getLastField()
 
-								values := re.param.parts
-								times := len(values) - 1
+								times := re.paramsLength - 1
 
 								statement := field + " NOT LIKE '%" + re.valueholder + "%'"
 

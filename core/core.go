@@ -1,7 +1,6 @@
 package core
 
 import (
-	"reflect"
 	"strings"
 )
 
@@ -21,8 +20,8 @@ type GransakCore struct {
 	placeholder     string
 	valueholder     string
 	pos             int
-	param           *gransakParam
 	tableName       string
+	paramsLength    int
 }
 
 func (this *GransakCore) Table(tableName string) *GransakCore {
@@ -31,12 +30,12 @@ func (this *GransakCore) Table(tableName string) *GransakCore {
 	return this
 }
 
-func (this *GransakCore) Parse(input string, param interface{}) string {
+func (this *GransakCore) Parse(input string, paramsLength int) string {
 	this.reset()
 
-	this.tokenize(input)
+	this.paramsLength = paramsLength
 
-	this.param = newGransakParam(param, reflect.TypeOf(param).Kind())
+	this.tokenize(input)
 
 	for this.pos = 0; this.pos < len(this.toEvaluate); this.pos++ {
 		token := this.toEvaluate[this.pos]
@@ -58,8 +57,6 @@ func (this *GransakCore) Parse(input string, param interface{}) string {
 		}
 	}
 
-	this.replaceValue()
-
 	this.appendSelectStatement()
 
 	this.tableName = ""
@@ -71,7 +68,6 @@ func (this *GransakCore) reset() {
 	this.toEvaluate = []string{}
 	this.evaluatedTokens = []string{}
 	this.template = ""
-	this.param = nil
 }
 
 func (this *GransakCore) tokenize(input string) {
@@ -145,27 +141,6 @@ func (this *GransakCore) replacePlaceholder(replaceFor string) {
 
 func (this *GransakCore) replaceValueHolders(replaceFor string) {
 	this.replace(this.valueholder, replaceFor)
-}
-
-func (this *GransakCore) replaceValue() {
-	if len(this.param.parts) == 0 {
-		this.replaceValueHolders(this.param.StrRepresentation)
-	} else {
-		for index, value := range this.param.parts {
-			if isLast(index, this.param.parts) {
-				this.replaceValueHolders(value)
-			} else {
-				this.template = strings.Replace(this.template, this.valueholder, value, 1)
-			}
-		}
-	}
-}
-
-func (this *GransakCore) getCorrectSqlFormat(value string) string {
-	if this.param.kind == reflect.String {
-		return "'" + value + "'"
-	}
-	return value
 }
 
 func (this *GransakCore) appendSelectStatement() {
