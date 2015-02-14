@@ -20,15 +20,8 @@ type GransakCore struct {
 	placeholder     string
 	valueholder     string
 	pos             int
-	tableName       string
 	param           *gransakParam
 	statements      int
-}
-
-func (this *GransakCore) Table(tableName string) *GransakCore {
-	this.tableName = tableName
-
-	return this
 }
 
 func (this *GransakCore) Parse(input string, param interface{}) (string, []interface{}) {
@@ -58,11 +51,7 @@ func (this *GransakCore) Parse(input string, param interface{}) (string, []inter
 		}
 	}
 
-	this.appendSelectStatement()
-
 	this.adjustParameters()
-
-	this.tableName = ""
 
 	return strings.Trim(this.template, " "), this.param.parts
 }
@@ -148,12 +137,6 @@ func (this *GransakCore) replacePlaceholder(replaceFor string) {
 
 func (this *GransakCore) replaceValueHolders(replaceFor string) {
 	this.replace(this.valueholder, replaceFor)
-}
-
-func (this *GransakCore) appendSelectStatement() {
-	if strings.Trim(this.tableName, " ") != "" {
-		this.template = "SELECT * FROM " + this.tableName + " WHERE " + this.template
-	}
 }
 
 func (this *GransakCore) adjustParameters() {

@@ -3,6 +3,7 @@ package gransak
 import (
 	//"net/http"
 	//"net/url"
+	"strings"
 
 	"github.com/crowdint/gransak/core"
 )
@@ -10,20 +11,42 @@ import (
 var Gransak *GransakFilter
 
 type GransakFilter struct {
-	*core.GransakCore
+	core      *core.GransakCore
+	tableName string
 }
 
 func init() {
 	if Gransak == nil {
 		core := core.NewGransak()
 		Gransak = &GransakFilter{
-			core,
+			core: core,
 		}
 	}
 }
 
 func (this *GransakFilter) ToSql(input string, param interface{}) (string, []interface{}) {
-	return this.Parse(input, param)
+	statement, parsedParams := this.core.Parse(input, param)
+
+	result := this.appendSelectStatement(statement)
+
+	this.tableName = ""
+
+	return result, parsedParams
+}
+
+func (this *GransakFilter) Table(tableName string) *GransakFilter {
+	this.tableName = tableName
+
+	return this
+}
+
+func (this *GransakFilter) appendSelectStatement(statement string) string {
+	table := strings.Trim(this.tableName, " ")
+
+	if table != "" {
+		return "SELECT * FROM " + table + " WHERE " + statement
+	}
+	return statement
 }
 
 //func (this *GransakFilter) FromRequest(r *http.Request) string {
