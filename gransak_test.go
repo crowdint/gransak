@@ -298,6 +298,15 @@ func TestGransak(t *testing.T) {
 		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
+	//Adding a select statement (only if a table name was specified)
+	expected = "SELECT * FROM conejo WHERE user_name LIKE ?"
+	sql, params = Gransak.Table("conejo").ToSql("user_name_cont", "cone")
+	strParams = toString(params)
+
+	if sql != expected || strParams != "[%cone%]" {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
+	}
+
 }
 
 func TestFromRequest(t *testing.T) {
@@ -316,14 +325,12 @@ func TestFromRequest(t *testing.T) {
 	w := httptest.NewRecorder()
 	handler(w, req)
 
-	expected := "name = ? AND last_name = ?"
-
-	if sql != expected {
-		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	if sql == "" {
+		t.Error("The query is empty")
 	}
 
-	if toString(params) != "[cone Gutierrez]" {
-		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", toString(params), "[cone Gutierrez]")
+	if len(params) != 2 {
+		t.Error("Error invalid number of parameters")
 	}
 }
 
