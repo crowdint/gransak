@@ -1,9 +1,9 @@
 package gransak
 
 import (
-	//"net/http"
-	//"net/http/httptest"
 	"fmt"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 )
 
@@ -300,27 +300,32 @@ func TestGransak(t *testing.T) {
 
 }
 
-//func TestFromRequest(t *testing.T) {
-//var sql string
+func TestFromRequest(t *testing.T) {
+	var sql string
+	var params []interface{}
 
-//handler := func(w http.ResponseWriter, r *http.Request) {
-//sql = Gransak.FromRequest(r)
-//}
+	handler := func(w http.ResponseWriter, r *http.Request) {
+		sql, params = Gransak.FromRequest(r)
+	}
 
-//req, err := http.NewRequest("GET", "http://gransak.com/params?q[name_eq]=cone&q[last_name_eq]=Gutierrez", nil)
-//if err != nil {
-//panic(err)
-//}
+	req, err := http.NewRequest("GET", "http://gransak.com/params?q[name_eq]=cone&q[last_name_eq]=Gutierrez", nil)
+	if err != nil {
+		panic(err)
+	}
 
-//w := httptest.NewRecorder()
-//handler(w, req)
+	w := httptest.NewRecorder()
+	handler(w, req)
 
-//expected := "name = '{{v}}' AND last_name = 'Gutierrez'"
+	expected := "name = {{v}} AND last_name = {{v}}"
 
-//if sql != expected {
-//t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
-//}
-//}
+	if sql != expected {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
+	}
+
+	if toString(params) != "[cone Gutierrez]" {
+		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", toString(params), "[cone Gutierrez]")
+	}
+}
 
 func toString(elem interface{}) string {
 	return fmt.Sprintf("%v", elem)

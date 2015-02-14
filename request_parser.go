@@ -1,54 +1,58 @@
 package gransak
 
-//import (
-//"net/http"
-//"net/url"
-//"regexp"
-//"strconv"
-//"strings"
-//)
+import (
+	"net/http"
+	"net/url"
+	"regexp"
+	"strconv"
+	"strings"
+)
 
-//func parseRequest(r *http.Request) string {
-//params := r.URL.Query()
+func parseRequest(r *http.Request) (string, []interface{}) {
+	params := r.URL.Query()
 
-//return getGransakQuery(&params)
-//}
+	return getGransakQuery(&params)
+}
 
-//func parseUrlValues(params url.Values) string {
-//return getGransakQuery(&params)
-//}
+func parseUrlValues(params url.Values) (string, []interface{}) {
+	return getGransakQuery(&params)
+}
 
-//func getGransakQuery(params *url.Values) string {
-//r := regexp.MustCompile(`^q\[[\w]+\]$`)
-//var temp, sql string
-//statements := []string{}
+func getGransakQuery(params *url.Values) (string, []interface{}) {
+	r := regexp.MustCompile(`^q\[[\w]+\]$`)
+	var temp, sql string
+	statements := []string{}
+	parsedParams := []interface{}{}
+	gparams := []interface{}{}
 
-//for key, value := range *params {
+	for key, value := range *params {
 
-//if r.MatchString(key) {
-//temp = strings.Replace(key, "q[", "", 1)
-//temp = strings.Replace(temp, "]", "", 1)
+		if r.MatchString(key) {
+			temp = strings.Replace(key, "q[", "", 1)
+			temp = strings.Replace(temp, "]", "", 1)
 
-//sql, _ := getSqlString(temp, value[0])
+			sql, gparams = getSqlString(temp, value[0])
 
-//if strings.Trim(sql, " ") != "" {
-//statements = append(statements, sql)
-//}
-//}
-//}
+			parsedParams = append(parsedParams, gparams...)
 
-//return strings.Join(statements, " AND ")
-//}
+			if strings.Trim(sql, " ") != "" {
+				statements = append(statements, sql)
+			}
+		}
+	}
 
-//func getSqlString(query, value string) (string, []interface{}) {
+	return strings.Join(statements, " AND "), parsedParams
+}
 
-//if intVal, err := strconv.ParseInt(value, 0, 64); err == nil {
-//return Gransak.ToSql(query, intVal)
-//}
+func getSqlString(query, value string) (string, []interface{}) {
 
-//if floatVal, err := strconv.ParseFloat(value, 64); err == nil {
-//return Gransak.ToSql(query, floatVal)
-//}
+	if intVal, err := strconv.ParseInt(value, 0, 64); err == nil {
+		return Gransak.ToSql(query, intVal)
+	}
 
-//return Gransak.ToSql(query, value)
-//}
+	if floatVal, err := strconv.ParseFloat(value, 64); err == nil {
+		return Gransak.ToSql(query, floatVal)
+	}
+
+	return Gransak.ToSql(query, value)
+}

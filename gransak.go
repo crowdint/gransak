@@ -1,8 +1,8 @@
 package gransak
 
 import (
-	//"net/http"
-	//"net/url"
+	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/crowdint/gransak/core"
@@ -49,10 +49,10 @@ func (this *GransakFilter) appendSelectStatement(statement string) string {
 	return statement
 }
 
-//func (this *GransakFilter) FromRequest(r *http.Request) string {
-//return parseRequest(r)
-//}
+func (this *GransakFilter) FromRequest(r *http.Request) (string, []interface{}) {
+	return parseRequest(r)
+}
 
-//func (this *GransakFilter) FromUrlValues(v url.Values) string {
-//return parseUrlValues(v)
-//}
+func (this *GransakFilter) FromUrlValues(v url.Values) (string, []interface{}) {
+	return parseUrlValues(v)
+}
