@@ -6,8 +6,8 @@ Gransak was born for the need of a replacement for ransack. This was because we 
 
 So we decided to create a library to transform a ransak like string to a Sql statement an be able to use it in a normal query to a database using golang. We also found useful to generate only the 'WERE' part of the query to be able to use it with ``gorm`` (https://github.com/jinzhu/gorm) e.g.
 
-        query := Gransak.ToSql(ransakQuery)
-        db.Were(query).Find(&users)
+        query, params := Gransak.ToSql(ransakQuery)
+        db.Were(query, params).Find(&users)
 
 ##Install
 
@@ -29,59 +29,71 @@ Currently gransak transforms a ransack like string into a sql 'where' statement 
     )
     
     func main() {
-      sql := Gransak.ToSql("user_name_eq", "cone")
+      sql, params := Gransak.ToSql("user_name_eq", "cone")
 
-      fmt.Println(sql)
-      //prints: user_name = 'cone'
+      fmt.Printf("query-> %s, params-> %v", sql, params)
+      //prints: query-> user_name = ?, params-> [cone]
     }
     
 Also it can generate the complete statement if a table name is specified
 e.g.
 
-    sql = Gransak.Table("users").ToSql("user_name_eq", "cone")
+    sql, _ = Gransak.Table("users").ToSql("user_name_eq", "cone")
     //returns: SELECT * FROM users WHERE user_name = 'cone'
     
 ##Methods
 
 ###ToSql
 
-Returns an SQL statement. It takes the ransak query string and the value as parameters 
+Returns an SQL statement. It takes the ransak query string and the value as parameters. 
 
-    sql = Gransak.ToSql("user_name_eq", "cone")
-    //returns: user_name = 'cone'
+    sql, params = Gransak.ToSql("user_name_eq", "cone")
+    //returns: user_name = ?
+    //parameters: [cone]
  
 ###FromRequest
 
-Resturns an SQL statement. It gets the query strings from a http.Request struct
+Resturns an SQL statement. It gets the query strings from a http.Request struct.
 
     func Handler(w http.ResponseWritter, r *http.Request){
         //request: http://someurl/params?q[user_name_eq]=cone
-        sql = Gransak.FromRequest(r)
-        //returns: user_name = 'cone'
+        sql, _ = Gransak.FromRequest(r)
+        //returns: user_name = ?
+        //parameters: [cone]
     }
     
-We can chain several statements too
+We can chain several statements too.
 
     func Handler(w http.ResponseWritter, r *http.Request){
         //request: http://someurl/params?q[user_name_eq]=cone&q[role_cont]=admin
-        sql = Gransak.FromRequest(r)
-        //returns: user_name = 'cone' AND role LIKE %admin%
+        sql, _ = Gransak.FromRequest(r)
+        //returns: user_name = ? AND role LIKE ?
+        //parameters: [cone %admin%]
     }
 
 ###FromUrlValues
 
-Returns an SQL statement. It gets the query strings from an url.Values struct
+Returns an SQL statement. It gets the query strings from an url.Values struct.
 
     func Handler(w http.ResponseWritter, r *http.Request){
         //request: http://someurl/params?q[user_name_eq]=cone
         values := r.URL.Query()
-        sql = Gransak.FromUrlValues(values)
-        //returns: user_name = 'cone'
+        sql, _ = Gransak.FromUrlValues(values)
+        //returns: user_name = ?
+        //parameters: [cone]
     }
+
+###SetEngine
+
+Changes the type of placeholder used e.g. "?" for MySQL or "$[n]" for
+PostgreSql.
 
 At this moment Gransak doesn't support associations
 
 ##Searching operations currently supported
+
+In the following examples the placeholders have been substituted by the
+parameter value for a better visualization.
 
 ###or
 

@@ -21,19 +21,19 @@ func TestRequestParser(t *testing.T) {
 
 	got, gparams := parseUrlValues(params)
 
-	substring := "last_name = {{v}}"
+	substring := "last_name = ?"
 
 	if !strings.Contains(got, substring) {
 		t.Errorf("Response: %s, doesn not contain substring: %s", got, substring)
 	}
 
-	substring = "name = {{v}}"
+	substring = "name = ?"
 
 	if !strings.Contains(got, substring) {
 		t.Errorf("Response: %s, doesn not contain substring: %s", got, substring)
 	}
 
-	substring = "cp = {{v}}"
+	substring = "cp = ?"
 
 	if !strings.Contains(got, substring) {
 		t.Errorf("Response: %s, doesn not contain substring: %s", got, substring)
