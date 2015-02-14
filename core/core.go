@@ -1,7 +1,17 @@
 package core
 
 import (
+	"strconv"
 	"strings"
+)
+
+const (
+	MYSQL_ENGINE      = "mysql"
+	POSTGRESQL_ENGINE = "postgresql"
+)
+
+var (
+	ENGINE = MYSQL_ENGINE
 )
 
 func NewGransak() *GransakCore {
@@ -52,6 +62,8 @@ func (this *GransakCore) Parse(input string, param interface{}) (string, []inter
 	}
 
 	this.adjustParameters()
+
+	this.replaceForEnginePlaceholders()
 
 	return strings.Trim(this.template, " "), this.param.parts
 }
@@ -147,6 +159,23 @@ func (this *GransakCore) adjustParameters() {
 		dif := this.statements - numParams
 		for i := 0; i < dif; i++ {
 			this.param.parts = append(this.param.parts, repeatedvalue)
+		}
+	}
+}
+
+func (this *GransakCore) replaceForEnginePlaceholders() {
+	if ENGINE == MYSQL_ENGINE {
+		this.replaceValueHolders("?")
+	} else {
+		numParams := len(this.param.parts)
+
+		for i := 1; i <= numParams; i++ {
+			this.template = strings.Replace(
+				this.template,
+				this.valueholder,
+				"$"+strconv.Itoa(i),
+				1,
+			)
 		}
 	}
 }

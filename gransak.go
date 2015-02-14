@@ -8,11 +8,14 @@ import (
 	"github.com/crowdint/gransak/core"
 )
 
-var Gransak *GransakFilter
+var (
+	Gransak *GransakFilter
+)
 
 type GransakFilter struct {
 	core      *core.GransakCore
 	tableName string
+	engine    string
 }
 
 func init() {
@@ -55,4 +58,8 @@ func (this *GransakFilter) FromRequest(r *http.Request) (string, []interface{}) 
 
 func (this *GransakFilter) FromUrlValues(v url.Values) (string, []interface{}) {
 	return parseUrlValues(v)
+}
+
+func (this *GransakFilter) SetEngine(engine string) {
+	core.ENGINE = engine
 }

@@ -9,7 +9,7 @@ import (
 
 func TestGransak(t *testing.T) {
 	//cont / or / and
-	expected := "first_name LIKE {{v}} OR last_name LIKE {{v}}"
+	expected := "first_name LIKE ? OR last_name LIKE ?"
 	sql, params := Gransak.ToSql("first_name_or_last_name_cont", "cone")
 	strParams := toString(params)
 
@@ -17,7 +17,7 @@ func TestGransak(t *testing.T) {
 		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
-	expected = "first_name LIKE {{v}} AND last_name LIKE {{v}}"
+	expected = "first_name LIKE ? AND last_name LIKE ?"
 	sql, params = Gransak.ToSql("first_name_and_last_name_cont", "cone")
 	strParams = toString(params)
 
@@ -26,7 +26,7 @@ func TestGransak(t *testing.T) {
 	}
 
 	//not_cont / or / and
-	expected = "first_name NOT LIKE {{v}} OR last_name NOT LIKE {{v}}"
+	expected = "first_name NOT LIKE ? OR last_name NOT LIKE ?"
 	sql, params = Gransak.ToSql("first_name_or_last_name_not_cont", "cone")
 	strParams = toString(params)
 
@@ -35,7 +35,7 @@ func TestGransak(t *testing.T) {
 	}
 
 	//matches / or
-	expected = "first_name LIKE {{v}} OR last_name LIKE {{v}}"
+	expected = "first_name LIKE ? OR last_name LIKE ?"
 	sql, params = Gransak.ToSql("first_name_or_last_name_matches", "cone")
 	strParams = toString(params)
 
@@ -44,7 +44,7 @@ func TestGransak(t *testing.T) {
 	}
 
 	//does_not_match / or
-	expected = "first_name NOT LIKE {{v}} OR last_name NOT LIKE {{v}}"
+	expected = "first_name NOT LIKE ? OR last_name NOT LIKE ?"
 	sql, params = Gransak.ToSql("first_name_or_last_name_does_not_match", "cone")
 	strParams = toString(params)
 
@@ -53,7 +53,7 @@ func TestGransak(t *testing.T) {
 	}
 
 	//lt
-	expected = "age < {{v}}"
+	expected = "age < ?"
 	sql, params = Gransak.ToSql("age_lt", 29)
 	strParams = toString(params)
 
@@ -62,7 +62,7 @@ func TestGransak(t *testing.T) {
 	}
 
 	//gt
-	expected = "age > {{v}}"
+	expected = "age > ?"
 	sql, params = Gransak.ToSql("age_gt", 29)
 	strParams = toString(params)
 
@@ -71,7 +71,7 @@ func TestGransak(t *testing.T) {
 	}
 
 	//lteq
-	expected = "age <= {{v}}"
+	expected = "age <= ?"
 	sql, params = Gransak.ToSql("age_lteq", 29)
 	strParams = toString(params)
 
@@ -80,7 +80,7 @@ func TestGransak(t *testing.T) {
 	}
 
 	//gteq
-	expected = "age >= {{v}}"
+	expected = "age >= ?"
 	sql, params = Gransak.ToSql("age_gteq", 29)
 	strParams = toString(params)
 
@@ -89,7 +89,7 @@ func TestGransak(t *testing.T) {
 	}
 
 	//eq / or / and
-	expected = "first_name = {{v}} AND last_name = {{v}}"
+	expected = "first_name = ? AND last_name = ?"
 	sql, params = Gransak.ToSql("first_name_and_last_name_eq", "cone")
 	strParams = toString(params)
 
@@ -97,7 +97,7 @@ func TestGransak(t *testing.T) {
 		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
-	expected = "age = {{v}}"
+	expected = "age = ?"
 	sql, params = Gransak.ToSql("age_eq", 29)
 	strParams = toString(params)
 
@@ -105,7 +105,7 @@ func TestGransak(t *testing.T) {
 		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s with Params: %s", sql, expected, strParams)
 	}
 
-	expected = "age = {{v}} OR years = {{v}}"
+	expected = "age = ? OR years = ?"
 	sql, params = Gransak.ToSql("age_or_years_eq", 29)
 	strParams = toString(params)
 
@@ -114,7 +114,7 @@ func TestGransak(t *testing.T) {
 	}
 
 	//not_eq / or
-	expected = "age <> {{v}} OR years <> {{v}}"
+	expected = "age <> ? OR years <> ?"
 	sql, params = Gransak.ToSql("age_or_years_not_eq", 29)
 	strParams = toString(params)
 
@@ -123,7 +123,7 @@ func TestGransak(t *testing.T) {
 	}
 
 	//start
-	expected = "name LIKE {{v}}"
+	expected = "name LIKE ?"
 	sql, params = Gransak.ToSql("name_start", "cone")
 	strParams = toString(params)
 
@@ -132,7 +132,7 @@ func TestGransak(t *testing.T) {
 	}
 
 	//not_start
-	expected = "name NOT LIKE {{v}}"
+	expected = "name NOT LIKE ?"
 	sql, params = Gransak.ToSql("name_not_start", "cone")
 	strParams = toString(params)
 
@@ -141,7 +141,7 @@ func TestGransak(t *testing.T) {
 	}
 
 	//end
-	expected = "name LIKE {{v}}"
+	expected = "name LIKE ?"
 	sql, params = Gransak.ToSql("name_end", "cone")
 	strParams = toString(params)
 
@@ -151,7 +151,7 @@ func TestGransak(t *testing.T) {
 	}
 
 	//not_end
-	expected = "name NOT LIKE {{v}}"
+	expected = "name NOT LIKE ?"
 	sql, params = Gransak.ToSql("name_not_end", "cone")
 	strParams = toString(params)
 
@@ -232,7 +232,7 @@ func TestGransak(t *testing.T) {
 	}
 
 	//in
-	expected = "age IN ({{v}},{{v}},{{v}})"
+	expected = "age IN (?,?,?)"
 	sql, params = Gransak.ToSql("age_in", "28..30")
 	strParams = toString(params)
 
@@ -255,7 +255,7 @@ func TestGransak(t *testing.T) {
 	}
 
 	//not_in
-	expected = "age NOT IN ({{v}},{{v}},{{v}})"
+	expected = "age NOT IN (?,?,?)"
 	sql, params = Gransak.ToSql("age_not_in", "28..30")
 	strParams = toString(params)
 
@@ -271,7 +271,7 @@ func TestGransak(t *testing.T) {
 	}
 
 	//cont_any
-	expected = "user_name LIKE {{v}} OR user_name LIKE {{v}}"
+	expected = "user_name LIKE ? OR user_name LIKE ?"
 	sql, params = Gransak.ToSql("user_name_cont_any", "%w(cone carlos)")
 	strParams = toString(params)
 
@@ -280,7 +280,7 @@ func TestGransak(t *testing.T) {
 	}
 
 	//not_cont_any
-	expected = "user_name NOT LIKE {{v}} AND user_name NOT LIKE {{v}}"
+	expected = "user_name NOT LIKE ? AND user_name NOT LIKE ?"
 	sql, params = Gransak.ToSql("user_name_not_cont_any", "%w(cone carlos)")
 	strParams = toString(params)
 
@@ -290,7 +290,7 @@ func TestGransak(t *testing.T) {
 
 	//Has word "not" but is not "not_equal" nor "not_in"
 	//so it must be part of the field's name
-	expected = "field_not_operator = {{v}}"
+	expected = "field_not_operator = ?"
 	sql, params = Gransak.ToSql("field_not_operator_eq", 29)
 	strParams = toString(params)
 
@@ -316,7 +316,7 @@ func TestFromRequest(t *testing.T) {
 	w := httptest.NewRecorder()
 	handler(w, req)
 
-	expected := "name = {{v}} AND last_name = {{v}}"
+	expected := "name = ? AND last_name = ?"
 
 	if sql != expected {
 		t.Errorf("Mismatch Error:\nGot: %s \nWanted: %s", sql, expected)
