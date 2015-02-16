@@ -8,6 +8,10 @@ So we decided to create a library to transform a ransak like string to a Sql sta
 
         query, params := Gransak.ToSql(ransakQuery)
         db.Were(query, params).Find(&users)
+        
+or in the traditional way:
+        
+        db.Query(quey, params...)
 
 ##Install
 
