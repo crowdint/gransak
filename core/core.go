@@ -1,8 +1,17 @@
 package core
 
 import (
-	"reflect"
+	"strconv"
 	"strings"
+)
+
+const (
+	MYSQL_ENGINE      = "mysql"
+	POSTGRESQL_ENGINE = "postgresql"
+)
+
+var (
+	ENGINE = MYSQL_ENGINE
 )
 
 func NewGransak() *GransakCore {
@@ -22,21 +31,15 @@ type GransakCore struct {
 	valueholder     string
 	pos             int
 	param           *gransakParam
-	tableName       string
+	statements      int
 }
 
-func (this *GransakCore) Table(tableName string) *GransakCore {
-	this.tableName = tableName
-
-	return this
-}
-
-func (this *GransakCore) ToSql(input string, param interface{}) string {
+func (this *GransakCore) Parse(input string, param interface{}) (string, []interface{}) {
 	this.reset()
 
 	this.tokenize(input)
 
-	this.param = newGransakParam(param, reflect.TypeOf(param).Kind())
+	this.param = newGransakParam(param)
 
 	for this.pos = 0; this.pos < len(this.toEvaluate); this.pos++ {
 		token := this.toEvaluate[this.pos]
@@ -58,20 +61,18 @@ func (this *GransakCore) ToSql(input string, param interface{}) string {
 		}
 	}
 
-	this.replaceValue()
+	this.adjustParameters()
 
-	this.appendSelectStatement()
+	this.replaceForEnginePlaceholders()
 
-	this.tableName = ""
-
-	return strings.Trim(this.template, " ")
+	return strings.Trim(this.template, " "), this.param.parts
 }
 
 func (this *GransakCore) reset() {
 	this.toEvaluate = []string{}
 	this.evaluatedTokens = []string{}
 	this.template = ""
-	this.param = nil
+	this.statements = 0
 }
 
 func (this *GransakCore) tokenize(input string) {
@@ -114,6 +115,9 @@ func (this *GransakCore) find(nodeParam *Node, pos int) (*Node, bool) {
 
 func (this *GransakCore) appendField() string {
 	field := this.getLastField()
+
+	this.statements++
+
 	if field != "" {
 		this.template += field + " " + this.placeholder + " "
 	}
@@ -147,30 +151,32 @@ func (this *GransakCore) replaceValueHolders(replaceFor string) {
 	this.replace(this.valueholder, replaceFor)
 }
 
-func (this *GransakCore) replaceValue() {
-	if len(this.param.parts) == 0 {
-		this.replaceValueHolders(this.param.StrRepresentation)
-	} else {
-		for index, value := range this.param.parts {
-			if isLast(index, this.param.parts) {
-				this.replaceValueHolders(value)
-			} else {
-				this.template = strings.Replace(this.template, this.valueholder, value, 1)
-			}
+func (this *GransakCore) adjustParameters() {
+	numParams := len(this.param.parts)
+
+	if numParams < this.statements && len(this.param.parts) > 0 {
+		repeatedvalue := this.param.parts[len(this.param.parts)-1]
+		dif := this.statements - numParams
+		for i := 0; i < dif; i++ {
+			this.param.parts = append(this.param.parts, repeatedvalue)
 		}
 	}
 }
 
-func (this *GransakCore) getCorrectSqlFormat(value string) string {
-	if this.param.kind == reflect.String {
-		return "'" + value + "'"
-	}
-	return value
-}
+func (this *GransakCore) replaceForEnginePlaceholders() {
+	if ENGINE == MYSQL_ENGINE {
+		this.replaceValueHolders("?")
+	} else {
+		numParams := len(this.param.parts)
 
-func (this *GransakCore) appendSelectStatement() {
-	if strings.Trim(this.tableName, " ") != "" {
-		this.template = "SELECT * FROM " + this.tableName + " WHERE " + this.template
+		for i := 1; i <= numParams; i++ {
+			this.template = strings.Replace(
+				this.template,
+				this.valueholder,
+				"$"+strconv.Itoa(i),
+				1,
+			)
+		}
 	}
 }
 

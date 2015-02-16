@@ -8,62 +8,62 @@ import (
 	"strings"
 )
 
-var injectionCharacters = regexp.MustCompile(`['|"|\\|%|\_|\-|/|;]`)
+var (
+	ellipsisRx = regexp.MustCompile(`^[\d]+[.]{2}[\d]+$`)
+	arrayRx    = regexp.MustCompile(`^\[[\d|,]*\]$`)
+	wordListRx = regexp.MustCompile(`^\%w\([\w\s]+\)$`)
+)
 
-func newGransakParam(param interface{}, kind reflect.Kind) *gransakParam {
-	ellipsisRx := regexp.MustCompile(`^[\d]+[.]{2}[\d]+$`)
-
-	arrayRx := regexp.MustCompile(`^\[[\d|,]*\]$`)
-
-	wordListRx := regexp.MustCompile(`^\%w\([\w\s]+\)$`)
-
+func newGransakParam(param interface{}) *gransakParam {
 	rparam := &gransakParam{
-		value:      param,
-		kind:       kind,
-		ellipsisRx: ellipsisRx,
-		arrayRx:    arrayRx,
-		wordListRx: wordListRx,
-		parts:      []string{},
+		value: param,
+		kind:  reflect.ValueOf(param).Kind(),
+		parts: []interface{}{},
 	}
-
-	rparam.findStrRepresentation()
 
 	return rparam
 }
 
 type gransakParam struct {
-	value             interface{}
-	kind              reflect.Kind
-	StrRepresentation string
-	ellipsisRx        *regexp.Regexp
-	arrayRx           *regexp.Regexp
-	wordListRx        *regexp.Regexp
-	parts             []string
+	value interface{}
+	kind  reflect.Kind
+	parts []interface{}
 }
 
-func (this *gransakParam) findStrRepresentation() {
+func (this *gransakParam) parse(left, right string) int {
+	if this.kind == reflect.Slice {
+		t := reflect.ValueOf(this.value)
+		length := t.Len()
+
+		for i := 0; i < length; i++ {
+			this.parts = append(this.parts, t.Index(i).Interface())
+		}
+
+		return len(this.parts)
+	}
+
 	paramStr := fmt.Sprintf("%v", this.value)
 
-	if str, isEllipsis := this.getFromEllipsis(paramStr); isEllipsis {
-		this.StrRepresentation = str
-		return
+	if this.getFromEllipsis(paramStr) {
+		return len(this.parts)
 	}
 
-	if str, isArray := this.getFromArray(paramStr); isArray {
-		this.StrRepresentation = str
-		return
+	if this.getFromArray(paramStr) {
+		return len(this.parts)
 	}
 
-	if str, isWordList := this.getFromWordList(paramStr); isWordList {
-		this.StrRepresentation = str
-		return
+	if this.getFromWordList(paramStr, left, right) {
+		return len(this.parts)
 	}
 
-	this.StrRepresentation = sanitize(paramStr)
+	result := left + paramStr + right
+	this.parts = []interface{}{result}
+
+	return 1
 }
 
-func (this *gransakParam) getFromEllipsis(param string) (string, bool) {
-	if this.ellipsisRx.MatchString(param) {
+func (this *gransakParam) getFromEllipsis(param string) bool {
+	if ellipsisRx.MatchString(param) {
 		values := strings.Split(param, "..")
 
 		//if it wasn't a number, the regexp would have failed,
@@ -71,34 +71,33 @@ func (this *gransakParam) getFromEllipsis(param string) (string, bool) {
 		start, _ := strconv.Atoi(values[0])
 		end, _ := strconv.Atoi(values[1])
 
-		var strValues []string
-
 		for i := start; i <= end; i++ {
-			strValues = append(strValues, strconv.Itoa(i))
+			this.parts = append(this.parts, i)
 		}
-
-		return strings.Join(strValues, ","), true
+		return true
 	}
-	return "", false
+	return false
 }
 
-func (this *gransakParam) getFromArray(param string) (string, bool) {
-	if this.kind == reflect.Slice {
-		param = strings.Replace(param, " ", ",", -1)
-	}
-
-	if this.arrayRx.MatchString(param) {
+func (this *gransakParam) getFromArray(param string) bool {
+	if arrayRx.MatchString(param) {
 		r := regexp.MustCompile(`[\[|\]]`)
 
 		param = r.ReplaceAllString(param, "")
 
-		return strings.Trim(param, ","), true
+		param = strings.Trim(param, ",")
+
+		for _, item := range strings.Split(param, ",") {
+			this.parts = append(this.parts, item)
+		}
+
+		return true
 	}
-	return "", false
+	return false
 }
 
-func (this *gransakParam) getFromWordList(param string) (string, bool) {
-	if this.wordListRx.MatchString(param) {
+func (this *gransakParam) getFromWordList(param, left, right string) bool {
+	if wordListRx.MatchString(param) {
 		param = strings.Replace(param, "%w", "", 1)
 
 		r := regexp.MustCompile(`[\(|\)]`)
@@ -108,12 +107,9 @@ func (this *gransakParam) getFromWordList(param string) (string, bool) {
 		parts := strings.Split(param, " ")
 
 		for _, part := range parts {
-			this.parts = append(this.parts, sanitize(part))
+			this.parts = append(this.parts, left+part+right)
 		}
+		return true
 	}
-	return "", false
-}
-
-func sanitize(value string) string {
-	return injectionCharacters.ReplaceAllString(value, "")
+	return false
 }

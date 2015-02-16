@@ -1,59 +1,62 @@
 package core
 
 import (
-	"reflect"
+	"fmt"
 	"testing"
 )
 
 func TestGransakParam(t *testing.T) {
 	//simple string parameter
 	paramStr := "cone"
-	wanted := paramStr
+	wanted := "[cone]"
 
-	param := newGransakParam(paramStr, reflect.String)
+	param := newGransakParam(paramStr)
+	param.parse("", "")
 
-	if param.StrRepresentation != wanted {
-		t.Errorf("Mismatch, wanted: %s got: %s", wanted, param.StrRepresentation)
+	if toString(param.parts) != wanted {
+		t.Errorf("Mismatch, wanted: %s got: %s", wanted, toString(param.parts))
 	}
 
 	//ellipsis string parameter
 	paramStr = "1..10"
-	wanted = "1,2,3,4,5,6,7,8,9,10"
+	wanted = "[1 2 3 4 5 6 7 8 9 10]"
 
-	param = newGransakParam(paramStr, reflect.String)
+	param = newGransakParam(paramStr)
+	param.parse("", "")
 
-	if param.StrRepresentation != wanted {
-		t.Errorf("Mismatch, wanted: %s got: %s", wanted, param.StrRepresentation)
+	if toString(param.parts) != wanted {
+		t.Errorf("Mismatch, wanted: %s got: %s", wanted, toString(param.parts))
 	}
 
 	//array string parameter
 	paramStr = "[1,2,3,4,5,6,7,8,9,10]"
-	wanted = "1,2,3,4,5,6,7,8,9,10"
 
-	param = newGransakParam(paramStr, reflect.String)
+	param = newGransakParam(paramStr)
+	param.parse("", "")
 
-	if param.StrRepresentation != wanted {
-		t.Errorf("Mismatch, wanted: %s got: %s", wanted, param.StrRepresentation)
+	if toString(param.parts) != wanted {
+		t.Errorf("Mismatch, wanted: %s got: %s", wanted, toString(param.parts))
 	}
 
 	//slice parameter
 	paramSlice := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
-	wanted = "1,2,3,4,5,6,7,8,9,10"
 
-	param = newGransakParam(paramSlice, reflect.Slice)
+	param = newGransakParam(paramSlice)
+	param.parse("", "")
 
-	if param.StrRepresentation != wanted {
-		t.Errorf("Mismatch, wanted: %s got: %s", wanted, param.StrRepresentation)
+	if toString(param.parts) != wanted {
+		t.Errorf("Mismatch, wanted: %s got: %s", wanted, toString(param.parts))
 	}
 
 	//word list parameter
 	paramStr = "%w(cone gutierrez)"
-	wanted = "w(cone gutierrez)"
+	wanted = "[cone gutierrez]"
 
-	param = newGransakParam(paramStr, reflect.String)
+	param = newGransakParam(paramStr)
+	param.parse("", "")
 
-	if param.StrRepresentation != wanted {
-		t.Errorf("Mismatch, wanted: %s got: %s", wanted, param.StrRepresentation)
+	if toString(param.parts) != wanted {
+		t.Errorf("Mismatch, wanted: %s got: %s", wanted, toString(param.parts))
 	}
 
 	if len(param.parts) < 2 {
@@ -64,4 +67,8 @@ func TestGransakParam(t *testing.T) {
 	if param.parts[0] != "cone" || param.parts[1] != "gutierrez" {
 		t.Errorf("Mismatch, first part (wanted: %s got: %s) second part (wanted: %s got: %s)", "cone", param.parts[0], "gutierrez", param.parts[1])
 	}
+}
+
+func toString(elem interface{}) string {
+	return fmt.Sprintf("%v", elem)
 }

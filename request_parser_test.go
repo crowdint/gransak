@@ -19,23 +19,27 @@ func TestRequestParser(t *testing.T) {
 		},
 	}
 
-	got := parseUrlValues(params)
+	got, gparams := parseUrlValues(params)
 
-	substring := "last_name = 'Gutierrez'"
-
-	if !strings.Contains(got, substring) {
-		t.Errorf("Response: %s, doesn not contain substring: %s", got, substring)
-	}
-
-	substring = "name = 'cone'"
+	substring := "last_name = ?"
 
 	if !strings.Contains(got, substring) {
 		t.Errorf("Response: %s, doesn not contain substring: %s", got, substring)
 	}
 
-	substring = "cp = 10289"
+	substring = "name = ?"
 
 	if !strings.Contains(got, substring) {
 		t.Errorf("Response: %s, doesn not contain substring: %s", got, substring)
+	}
+
+	substring = "cp = ?"
+
+	if !strings.Contains(got, substring) {
+		t.Errorf("Response: %s, doesn not contain substring: %s", got, substring)
+	}
+
+	if len(gparams) != 3 {
+		t.Error("Invalid number of params")
 	}
 }

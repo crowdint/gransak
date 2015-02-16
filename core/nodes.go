@@ -1,5 +1,9 @@
 package core
 
+import (
+	"strings"
+)
+
 type OperatorFunction func(re *GransakCore)
 
 type Node struct {
@@ -30,28 +34,39 @@ var Tree = &Node{
 			Name: "eq",
 			Apply: func(re *GransakCore) {
 				re.appendField()
-				re.replacePlaceholder("= " + re.getCorrectSqlFormat(re.valueholder))
+				re.param.parse("", "")
+				re.replacePlaceholder("= " + re.valueholder)
 			},
 		},
 		&Node{
 			Name: "in",
 			Apply: func(re *GransakCore) {
 				re.appendField()
-				re.replacePlaceholder("IN (" + re.valueholder + ")")
+				items := []string{}
+
+				numParams := re.param.parse("", "")
+
+				for i := 1; i <= numParams; i++ {
+					items = append(items, re.valueholder)
+				}
+
+				re.replacePlaceholder("IN (" + strings.Join(items, ",") + ")")
 			},
 		},
 		&Node{
 			Name: "matches",
 			Apply: func(re *GransakCore) {
 				re.appendField()
-				re.replacePlaceholder("LIKE '" + re.valueholder + "'")
+				re.param.parse("", "")
+				re.replacePlaceholder("LIKE " + re.valueholder)
 			},
 		},
 		&Node{
 			Name: "cont",
 			Apply: func(re *GransakCore) {
 				re.appendField()
-				re.replacePlaceholder("LIKE '%" + re.valueholder + "%'")
+				re.param.parse("%", "%")
+				re.replacePlaceholder("LIKE " + re.valueholder)
 			},
 			IsOperator: true,
 			Nodes: []*Node{
@@ -60,10 +75,9 @@ var Tree = &Node{
 					Apply: func(re *GransakCore) {
 						field := re.getLastField()
 
-						values := re.param.parts
-						times := len(values) - 1
+						times := re.param.parse("%", "") - 1
 
-						statement := field + " LIKE '%" + re.valueholder + "%'"
+						statement := field + " LIKE " + re.valueholder
 
 						re.template += statement
 
@@ -78,42 +92,48 @@ var Tree = &Node{
 			Name: "lt",
 			Apply: func(re *GransakCore) {
 				re.appendField()
-				re.replacePlaceholder("< " + re.getCorrectSqlFormat(re.valueholder))
+				re.param.parse("", "")
+				re.replacePlaceholder("< " + re.valueholder)
 			},
 		},
 		&Node{
 			Name: "lteq",
 			Apply: func(re *GransakCore) {
 				re.appendField()
-				re.replacePlaceholder("<= " + re.getCorrectSqlFormat(re.valueholder))
+				re.param.parse("", "")
+				re.replacePlaceholder("<= " + re.valueholder)
 			},
 		},
 		&Node{
 			Name: "gt",
 			Apply: func(re *GransakCore) {
 				re.appendField()
-				re.replacePlaceholder("> " + re.getCorrectSqlFormat(re.valueholder))
+				re.param.parse("", "")
+				re.replacePlaceholder("> " + re.valueholder)
 			},
 		},
 		&Node{
 			Name: "gteq",
 			Apply: func(re *GransakCore) {
 				re.appendField()
-				re.replacePlaceholder(">= " + re.getCorrectSqlFormat(re.valueholder))
+				re.param.parse("", "")
+				re.replacePlaceholder(">= " + re.valueholder)
 			},
 		},
 		&Node{
 			Name: "start",
 			Apply: func(re *GransakCore) {
 				re.appendField()
-				re.replacePlaceholder("LIKE '" + re.valueholder + "%'")
+				re.param.parse("", "%")
+				re.replacePlaceholder("LIKE " + re.valueholder)
 			},
 		},
 		&Node{
 			Name: "end",
 			Apply: func(re *GransakCore) {
 				re.appendField()
-				re.replacePlaceholder("LIKE '%" + re.valueholder + "'")
+				re.param.parse("%", "")
+				re.replacePlaceholder("LIKE " + re.valueholder)
 			},
 		},
 		&Node{
@@ -141,8 +161,7 @@ var Tree = &Node{
 			Name: "blank",
 			Apply: func(re *GransakCore) {
 				field := re.appendField()
-				re.replacePlaceholder("IS NULL OR " + re.placeholder)
-				re.replacePlaceholder(field + " = ''")
+				re.replacePlaceholder("IS NULL OR " + field + " = ''")
 			},
 		},
 		&Node{
@@ -159,21 +178,31 @@ var Tree = &Node{
 					Name: "eq",
 					Apply: func(re *GransakCore) {
 						re.appendField()
-						re.replacePlaceholder("<> " + re.getCorrectSqlFormat(re.valueholder))
+						re.param.parse("", "")
+						re.replacePlaceholder("<> " + re.valueholder)
 					},
 				},
 				&Node{
 					Name: "in",
 					Apply: func(re *GransakCore) {
 						re.appendField()
-						re.replacePlaceholder("NOT IN (" + re.valueholder + ")")
+						items := []string{}
+
+						numParams := re.param.parse("", "")
+
+						for i := 1; i <= numParams; i++ {
+							items = append(items, re.valueholder)
+						}
+
+						re.replacePlaceholder("NOT IN (" + strings.Join(items, ",") + ")")
 					},
 				},
 				&Node{
 					Name: "cont",
 					Apply: func(re *GransakCore) {
 						re.appendField()
-						re.replacePlaceholder("NOT LIKE '%" + re.valueholder + "%'")
+						re.param.parse("%", "%")
+						re.replacePlaceholder("NOT LIKE " + re.valueholder)
 					},
 					IsOperator: true,
 					Nodes: []*Node{
@@ -182,10 +211,9 @@ var Tree = &Node{
 							Apply: func(re *GransakCore) {
 								field := re.getLastField()
 
-								values := re.param.parts
-								times := len(values) - 1
+								times := re.param.parse("%", "%") - 1
 
-								statement := field + " NOT LIKE '%" + re.valueholder + "%'"
+								statement := field + " NOT LIKE " + re.valueholder
 
 								re.template += statement
 
@@ -200,14 +228,16 @@ var Tree = &Node{
 					Name: "start",
 					Apply: func(re *GransakCore) {
 						re.appendField()
-						re.replacePlaceholder("NOT LIKE '" + re.valueholder + "%'")
+						re.param.parse("", "%")
+						re.replacePlaceholder("NOT LIKE " + re.valueholder)
 					},
 				},
 				&Node{
 					Name: "end",
 					Apply: func(re *GransakCore) {
 						re.appendField()
-						re.replacePlaceholder("NOT LIKE '%" + re.valueholder + "'")
+						re.param.parse("%", "")
+						re.replacePlaceholder("NOT LIKE " + re.valueholder)
 					},
 				},
 				&Node{
@@ -243,7 +273,8 @@ var Tree = &Node{
 							Name: "match",
 							Apply: func(re *GransakCore) {
 								re.appendField()
-								re.replacePlaceholder("NOT LIKE '" + re.valueholder + "'")
+								re.param.parse("", "")
+								re.replacePlaceholder("NOT LIKE " + re.valueholder)
 							},
 						},
 					},
