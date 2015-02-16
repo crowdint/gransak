@@ -179,11 +179,6 @@ parameter value for a better visualization.
     Gransak.ToSql("user_role_cont_any", "%w(admin developer)")
     //returns: user_role LIKE '%admin%' OR user_role LIKE '%developer%'
 
-###we can even to things like this
-
-    Gransak.ToSql("name_cont_and_role_eq", "%w(cone developer)")
-    //returns: name LIKE '%cone%' and role = 'developer'
-
 ## Contributing
 
 1. Create your feature branch (`git checkout -b feature/my-new-feature`)
