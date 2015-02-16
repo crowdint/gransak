@@ -32,14 +32,16 @@ Currently gransak transforms a ransack like string into a sql 'where' statement 
       sql, params := Gransak.ToSql("user_name_eq", "cone")
 
       fmt.Printf("query-> %s, params-> %v", sql, params)
-      //prints: query-> user_name = ?, params-> [cone]
+      //prints: user_name = ? 
+      //parameters: [cone]
     }
     
 Also it can generate the complete statement if a table name is specified
 e.g.
 
     sql, _ = Gransak.Table("users").ToSql("user_name_eq", "cone")
-    //returns: SELECT * FROM users WHERE user_name = 'cone'
+    //returns: SELECT * FROM users WHERE user_name = ?
+    //parameters: [cone]
     
 ##Methods
 
@@ -174,7 +176,7 @@ parameter value for a better visualization.
     Gransak.ToSql("age_in", []int{27,28,29,30})
     //returns: age IN (27,28,29,30)
 
-###cont_any (and its opposite 'not_cont_any'
+###cont_any (and its opposite 'not_cont_any')
 
     Gransak.ToSql("user_role_cont_any", "%w(admin developer)")
     //returns: user_role LIKE '%admin%' OR user_role LIKE '%developer%'
