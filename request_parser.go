@@ -41,18 +41,26 @@ func getGransakQuery(params *url.Values) (string, []interface{}) {
 		}
 	}
 
-	return strings.Join(statements, " AND "), parsedParams
+	result := strings.Join(statements, " AND ")
+
+	result = ReplaceByEngineHolders(result, parsedParams)
+
+	result = Gransak.appendSelectStatement(result)
+
+	Gransak.Table("")
+
+	return result, parsedParams
 }
 
 func getSqlString(query, value string) (string, []interface{}) {
 
 	if intVal, err := strconv.ParseInt(value, 0, 64); err == nil {
-		return Gransak.ToSql(query, intVal)
+		return Gransak.core.Parse(query, intVal)
 	}
 
 	if floatVal, err := strconv.ParseFloat(value, 64); err == nil {
-		return Gransak.ToSql(query, floatVal)
+		return Gransak.core.Parse(query, floatVal)
 	}
 
-	return Gransak.ToSql(query, value)
+	return Gransak.core.Parse(query, value)
 }

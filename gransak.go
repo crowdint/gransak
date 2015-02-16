@@ -32,6 +32,8 @@ func (this *GransakFilter) ToSql(input string, param interface{}) (string, []int
 
 	result := this.appendSelectStatement(statement)
 
+	result = ReplaceByEngineHolders(result, parsedParams)
+
 	this.tableName = ""
 
 	return result, parsedParams

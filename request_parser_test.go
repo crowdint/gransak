@@ -4,6 +4,8 @@ import (
 	"net/url"
 	"strings"
 	"testing"
+
+	"github.com/crowdint/gransak/core"
 )
 
 func TestRequestParser(t *testing.T) {
@@ -19,21 +21,23 @@ func TestRequestParser(t *testing.T) {
 		},
 	}
 
+	Gransak.SetEngine(core.POSTGRESQL_ENGINE)
+
 	got, gparams := parseUrlValues(params)
 
-	substring := "last_name = ?"
+	substring := "last_name"
 
 	if !strings.Contains(got, substring) {
 		t.Errorf("Response: %s, doesn not contain substring: %s", got, substring)
 	}
 
-	substring = "name = ?"
+	substring = "name"
 
 	if !strings.Contains(got, substring) {
 		t.Errorf("Response: %s, doesn not contain substring: %s", got, substring)
 	}
 
-	substring = "cp = ?"
+	substring = "cp"
 
 	if !strings.Contains(got, substring) {
 		t.Errorf("Response: %s, doesn not contain substring: %s", got, substring)

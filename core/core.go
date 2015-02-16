@@ -8,6 +8,9 @@ import (
 const (
 	MYSQL_ENGINE      = "mysql"
 	POSTGRESQL_ENGINE = "postgresql"
+	PLACE_HOLDER      = "{{.}}"
+	VALUE_HOLDER      = "{{v}}"
+	SEPARATOR         = "_"
 )
 
 var (
@@ -16,9 +19,9 @@ var (
 
 func NewGransak() *GransakCore {
 	return &GransakCore{
-		separator:   "_",
-		placeholder: "{{.}}",
-		valueholder: "{{v}}",
+		separator:   SEPARATOR,
+		placeholder: PLACE_HOLDER,
+		valueholder: VALUE_HOLDER,
 	}
 }
 
@@ -62,8 +65,6 @@ func (this *GransakCore) Parse(input string, param interface{}) (string, []inter
 	}
 
 	this.adjustParameters()
-
-	this.replaceForEnginePlaceholders()
 
 	return strings.Trim(this.template, " "), this.param.parts
 }
