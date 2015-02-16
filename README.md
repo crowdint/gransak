@@ -36,8 +36,7 @@ Currently gransak transforms a ransack like string into a sql 'where' statement 
       sql, params := Gransak.ToSql("user_name_eq", "cone")
 
       fmt.Printf("query-> %s, params-> %v", sql, params)
-      //prints: user_name = ? 
-      //parameters: [cone]
+      //prints: query-> user_name = ?, params-> [cone]
     }
     
 Also it can generate the complete statement if a table name is specified
