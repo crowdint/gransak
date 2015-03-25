@@ -190,3 +190,8 @@ parameter value for a better visualization.
 2. Commit your changes (`git commit -am 'Add some feature'`)
 3. Push to the branch (`git push origin feature/my-new-feature`)
 4. Create a new Pull Request
+
+## About the Author
+
+[Crowd Interactive](http://www.crowdint.com) is an American web design and development company that happens to work in Colima, Mexico.
+We specialize in building and growing online retail stores. We don’t work with everyone – just companies we believe in. Call us today to see if there’s a fit.
